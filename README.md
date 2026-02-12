@@ -1,9 +1,7 @@
 # [Ophelia](https://wwww) &middot; [![Author Sexyprogrammer](https://img.shields.io/badge/Author-oseitutunelson-%3C%3E)](https://www.linkedin.com/in/sexyprogrammer/)
 
-This is a Dribbble clone app created using Next.js for educational purposes. Bribbble is an app that brings the vibrant and inspiring world of design right to your fingertips. Bribbble is your go-to platform for sharing, discovering, and celebrating creative brilliance, just like the original Dribbble.
-
-## Dribbble Clone
-
+ 
+ 
 # Ophelia — Creative portfolio & marketplace
 
 Ophelia is a Dribbble-like application built with Next.js for sharing and discovering creative work.
