@@ -9,14 +9,42 @@ import useGetProfile from '@/hooks/use-get-profile';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BookmarkIcon, HeartIcon, Mail } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 interface WorkHeaderProps {
   userId: string;
   title: string;
+  workId?: string;
 }
 
-export default function WorkHeader({ userId, title }: WorkHeaderProps) {
+export default function WorkHeader({ userId, title, workId }: WorkHeaderProps) {
   const { data, isLoading } = useGetProfile({ userId });
+  const [likesCount, setLikesCount] = useState<number | null>(null);
+  const [bookmarksCount, setBookmarksCount] = useState<number | null>(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
+  useEffect(() => {
+    if (!workId) return;
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await axios.get(`/api/work/${workId}/meta`);
+        if (res.data?.success && mounted) {
+          setLikesCount(res.data.likesCount ?? 0);
+          setBookmarksCount(res.data.bookmarksCount ?? 0);
+          setIsLiked(!!res.data.isLiked);
+          setIsBookmarked(!!res.data.isBookmarked);
+        }
+      } catch (err) {
+        // ignore
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [workId]);
 
   const [ref, entry] = useIntersectionObserver({
     threshold: 0,
@@ -93,20 +121,44 @@ export default function WorkHeader({ userId, title }: WorkHeaderProps) {
             </div>
           </div>
           <div className='flex items-center gap-3'>
-            <Button
-              variant='outline'
-              size='icon'
-              className='rounded-full w-8 h-8 md:w-10 md:h-10'
+            <button
+              type='button'
+              onClick={async () => {
+                if (!workId) return;
+                try {
+                  const res = await axios.post(`/api/work/${workId}/like`);
+                  if (res.data?.success) {
+                    setLikesCount(res.data.likesCount ?? 0);
+                    setIsLiked(!!res.data.liked);
+                  }
+                } catch (err) {
+                  console.error(err);
+                }
+              }}
+              className='rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border'
+              aria-label='Like'
             >
-              <HeartIcon size={16} />
-            </Button>
-            <Button
-              variant='outline'
-              size='icon'
-              className='rounded-full w-8 h-8 md:w-10 md:h-10'
+              <HeartIcon size={16} className={isLiked ? 'text-red-500' : ''} />
+            </button>
+            <button
+              type='button'
+              onClick={async () => {
+                if (!workId) return;
+                try {
+                  const res = await axios.post(`/api/work/${workId}/bookmark`);
+                  if (res.data?.success) {
+                    setBookmarksCount(res.data.bookmarksCount ?? 0);
+                    setIsBookmarked(!!res.data.bookmarked);
+                  }
+                } catch (err) {
+                  console.error(err);
+                }
+              }}
+              className='rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border'
+              aria-label='Bookmark'
             >
-              <BookmarkIcon size={16} />
-            </Button>
+              <BookmarkIcon size={16} className={isBookmarked ? 'text-red-500' : ''} />
+            </button>
             <Button className='rounded-full h-8 max-md:w-8 px-2 py-1 md:h-10 md:py-2 md:px-4'>
               <p className='hidden md:block'>Get in touch</p>
               <Mail className='w-4 h-4 md:hidden' />

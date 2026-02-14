@@ -8,6 +8,7 @@ import LearnDropdown from '@/components/learn-dropdown';
 import { Button } from '@/components/ui/button';
 import ProfileMenu from '@/components/profile-menu';
 import SearchInput from '@/components/search-input';
+import MobileMenu from '@/components/mobile-menu';
 
 const NavLinks = [
   { href: '/', key: 'Find talent', text: 'Find talent' },
@@ -24,9 +25,7 @@ export default function Navbar() {
   return (
     <nav className='flex justify-between items-center mid-xl:grid mid-xl:grid-cols-[1fr_96px_1fr] h-[100px] border-nav-border px-6 lg:px-10'>
       <div className='flex-1 flex justify-start items-center gap-1 xl:gap-10'>
-        <Button size='icon' variant='link' className='flex lg:hidden'>
-          <AlignLeft className='mid-xl:hidden w-7 h-7' />
-        </Button>
+        <MobileMenu userId={userId} />
         <Link href='/' className='mid-xl:hidden mr-8'>
           <Image
             src='/ophelia-light.png'

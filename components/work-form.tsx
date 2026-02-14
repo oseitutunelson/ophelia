@@ -255,13 +255,17 @@ export default function WorkForm({ work }: WorkFormProps) {
                       <SelectItem value='Animation'>Animation</SelectItem>
                       <SelectItem value='Branding'>Branding</SelectItem>
                       <SelectItem value='Illustration'>Illustration</SelectItem>
-                      <SelectItem value='Mobile'>Mobile</SelectItem>
-                      <SelectItem value='Print'>Print</SelectItem>
-                      <SelectItem value='Product Design'>
-                        Product Design
+                      <SelectItem value='Pattern Making'>Pattern Making</SelectItem>
+                      <SelectItem value='Garment Design'>Garment Design</SelectItem>
+                      <SelectItem value='3D Fashion Design'>
+                        3D Fashion Design
                       </SelectItem>
-                      <SelectItem value='Typography'>Typography</SelectItem>
-                      <SelectItem value='Web Design'>Web Design</SelectItem>
+                      <SelectItem value='Sketches & Concepts'>Sketches & Concepts</SelectItem>
+                      <SelectItem value='Jewelry & Accessories'>Jewelry & Accessories</SelectItem>
+                      <SelectItem value='Fashion Photography'>Fashion Photography</SelectItem>
+                      <SelectItem value='Jewelry & Accessories'>Jewelry & Accessories</SelectItem>
+                      <SelectItem value='NFT / Digital Ownership Fashion'>NFT / Digital Ownership Fashion</SelectItem>
+                      <SelectItem value='Metaverse Wearables'>Metaverse Wearables</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

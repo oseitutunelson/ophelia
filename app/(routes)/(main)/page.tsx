@@ -49,20 +49,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const { search, category } = searchParams;
 
   const titleContains = typeof search === 'string' ? search : undefined;
-  const categoryContains =
-    typeof category === 'string' &&
-    [
-      'Animation',
-      'Branding',
-      'Illustration',
-      'Mobile',
-      'Print',
-      'Product Design',
-      'Typography',
-      'Web Design'
-    ].includes(category)
-      ? category
-      : undefined;
+  // accept any category string so category filtering works for all categories
+  const categoryContains = typeof category === 'string' ? category : undefined;
 
   const [works, totalWorks] = await db.$transaction([
     db.work.findMany({

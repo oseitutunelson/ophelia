@@ -65,7 +65,18 @@ export async function POST(req: Request) {
       }
     });
 
-    revalidatePath('/');
+    // revalidate the home page and the category-specific URL so new uploads
+    // appear immediately on the Discover page and on their category page.
+    try {
+      revalidatePath('/');
+      if (typeof category === 'string' && category.trim() !== '') {
+        // include category query so cached category page is refreshed too
+        revalidatePath(`/?category=${encodeURIComponent(category)}`);
+      }
+    } catch (e) {
+      // revalidation is best-effort in dev; log but don't fail the request
+      console.warn('[WORK_POST] revalidatePath failed', e);
+    }
 
     return NextResponse.json({ success: true, work });
   } catch (error) {
@@ -97,20 +108,8 @@ export async function GET(req: NextRequest) {
 
     const titleContains = typeof search === 'string' ? search : undefined;
     const ownerUserId = typeof userId === 'string' ? userId : undefined;
-    const categoryContains =
-      typeof category === 'string' &&
-      [
-        'Animation',
-        'Branding',
-        'Illustration',
-        'Mobile',
-        'Print',
-        'Product Design',
-        'Typography',
-        'Web Design'
-      ].includes(category)
-        ? category
-        : undefined;
+    // accept any category string from the client so category filtering works for all categories
+    const categoryContains = typeof category === 'string' ? category : undefined;
 
     const works = await db.work.findMany({
       skip: typeof offset === 'string' ? parseInt(offset) : 0,

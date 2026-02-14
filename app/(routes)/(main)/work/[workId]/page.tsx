@@ -102,7 +102,7 @@ export default async function WorkPage({
   return (
     <WorkLayout>
       <div className='w-full relative pb-[70px]'>
-        <WorkHeader userId={work.userId} title={work.title} />
+  <WorkHeader userId={work.userId} title={work.title} workId={work.id} />
         <div className='flex justify-center md:px-4 lg:px-[120px]'>
           <div className='w-full flex flex-col items-center max-w-6xl'>
             <div className='w-full flex flex-col relative max-w-5xl'>

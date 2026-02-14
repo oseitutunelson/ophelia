@@ -34,3 +34,23 @@ model Work {
 
   @@index([userId])
 }
+
+model Like {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  workId    String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([workId])
+}
+
+model Bookmark {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  workId    String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([workId])
+}

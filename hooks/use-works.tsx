@@ -34,7 +34,7 @@ export default function useWorks({
   }
 
   if (userId !== undefined && typeof userId === 'string') {
-    params += params === '' ? '?userId=' + category : '&userId=' + userId;
+    params += params === '' ? '?userId=' + userId : '&userId=' + userId;
   }
 
   const { data, error, isLoading } = useSWR(`/api/work${params}`, fetcher);
