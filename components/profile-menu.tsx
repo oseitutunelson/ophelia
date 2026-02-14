@@ -79,6 +79,12 @@ export default function ProfileMenu() {
               >
                 Upload design work
               </Link>
+              <Link
+                href='/account/bookmarks'
+                className='text-[15px] py-2 hover:opacity-80 transition-opacity ease-in-out duration-200'
+              >
+                Saved
+              </Link>
               <button
                 onClick={() => setModalOpen(true)}
                 type='button'
@@ -161,6 +167,12 @@ export default function ProfileMenu() {
                 className='text-[15px] py-2 hover:opacity-80 transition-all ease-in-out duration-200'
               >
                 Upload design work
+              </Link>
+              <Link
+                href='/account/bookmarks'
+                className='text-[15px] py-2 hover:opacity-80 transition-all ease-in-out duration-200'
+              >
+                Saved
               </Link>
               <button
                 onClick={() => setModalOpen(true)}

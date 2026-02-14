@@ -4,9 +4,9 @@ import { Metadata } from 'next';
 import { SignUp } from '@clerk/nextjs';
 
 export const metadata: Metadata = {
-  title: 'Sign Up | Bribbble',
+  title: 'Sign Up | Ophelia',
   description:
-    'Create an account on Bribbble, the world’s leading community for designers to share, grow, and get hired.'
+    'Create an account on Ophelia, the world’s leading community for designers to share, grow, and get hired.'
 };
 
 export default function SignUpPage() {

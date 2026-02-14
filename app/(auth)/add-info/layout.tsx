@@ -5,7 +5,7 @@ import db from '@/lib/db';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Add Info | Bribbble',
+  title: 'Add Info | Ophelia',
   description: "Add additional information of your account's profile."
 };
 

@@ -33,7 +33,7 @@ export async function generateMetadata(
   return {
     title:
       typeof user.firstName === 'string'
-        ? user.firstName + ' ' + user.lastName + ' | Bribbble'
+        ? user.firstName + ' ' + user.lastName + ' | Ophelia'
         : previousTitle
   };
 }
