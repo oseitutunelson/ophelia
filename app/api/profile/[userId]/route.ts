@@ -30,7 +30,15 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ user, profile });
+    // Also fetch user's works
+    const works = await db.work.findMany({
+      where: {
+        userId: user.id
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    return NextResponse.json({ user, profile, works });
   } catch (error) {
     let message;
 

@@ -24,6 +24,18 @@ export default function ProfileNav({ username, activeNav }: ProfileNavProps) {
       </li>
       <li>
         <Link
+          href={`/${username}/jobs`}
+          className={cn(
+            'h-9 px-4 inline-flex items-center text-sm font-semibold hover:text-[#6e6d7a] transition-colors duration-200 ease-in',
+            activeNav === 'jobs' &&
+              'rounded-full bg-[#f8f7f4] hover:bg-[#f5f3f0] hover:text-[#0d0c22]'
+          )}
+        >
+          Jobs
+        </Link>
+      </li>
+      <li>
+        <Link
           href={`/${username}/about`}
           className={cn(
             'h-9 px-4 inline-flex items-center text-sm font-semibold hover:text-[#6e6d7a] transition-colors duration-200 ease-in',

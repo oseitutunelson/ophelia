@@ -54,3 +54,37 @@ model Bookmark {
   @@index([userId])
   @@index([workId])
 }
+
+model Job {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String
+  title       String
+  description String
+  category    String
+  location    String?
+  salary      String?
+  jobType     String   // "Full-time", "Part-time", "Freelance", "Contract"
+  experience  String?  // "Entry", "Mid", "Senior"
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([category])
+}
+
+model JobApplication {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  jobId     String
+  userId    String
+  message   String
+  workId    String?  // Optional: link to existing portfolio project
+  portfolioUrl String?  // Optional: custom link to portfolio, GitHub, etc
+  status    String   @default("pending")  // "pending", "accepted", "rejected"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([jobId])
+  @@index([userId])
+  @@unique([jobId, userId])  // One application per user per job
+}

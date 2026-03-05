@@ -14,7 +14,7 @@ const NavLinks = [
   { href: '/', key: 'Find talent', text: 'Find talent' },
   { href: '/', key: 'Inspiration', text: 'Inspiration' },
   { href: '/', key: 'Learn design', text: 'Learn design' },
-  { href: '/', key: 'Jobs', text: 'Jobs' },
+  { href: '/jobs', key: 'Jobs', text: 'Jobs' },
   { href: '/', key: 'Go Pro', text: 'Go Pro' }
 ];
 

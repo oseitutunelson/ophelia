@@ -24,6 +24,7 @@ type InputProps = {
   value?: File | string;
   onChange?: (file?: File) => void | Promise<void>;
   disabled?: boolean;
+  simple?: boolean;
   dropzoneOptions?: Omit<DropzoneOptions, 'disabled'>;
 };
 
@@ -44,7 +45,7 @@ const ERROR_MESSAGES = {
 
 const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
   (
-    { dropzoneOptions, width, height, value, className, disabled, onChange },
+    { dropzoneOptions, width, height, value, className, disabled, onChange, simple = false },
     ref
   ) => {
     const imageUrl = React.useMemo(() => {
@@ -145,36 +146,42 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
           ) : (
             // Upload Icon
             <div className='flex flex-col items-center justify-center text-xs text-gray-400'>
-              <Image
-                src='/picture-placeholder.png'
-                className='w-20 h-[86px] mb-3 hidden md:block'
-                width={80}
-                height={86}
-                alt='picture placeholder'
-              />
-              <p className='text-[#3d3d4e] text-base'>
+              {!simple && (
+                <Image
+                  src='/picture-placeholder.png'
+                  className='w-20 h-[86px] mb-3 hidden md:block'
+                  width={80}
+                  height={86}
+                  alt='picture placeholder'
+                />
+              )}
+              <p className='text-[#3d3d4e] text-sm md:text-base px-4 text-center'>
                 Drag and drop an image, or{' '}
                 <span className='underline underline-offset-[5px] decoration-2 decoration-pink-400'>
                   Browse
                 </span>
               </p>
-              <p className='text-sm mt-2 text-[#6e6d7a] text-center'>
-                Minimum 1200px width recommended. Max 2MB each (image only)
-              </p>
-              <ul className='mt-4 md:mt-10 flex flex-col md:flex-row flex-wrap max-w-[700px] list-disc list-inside'>
-                <li className='py-1 px-6 leading-5 text-sm text-[#6e6d7a] md:w-[50%]'>
-                  High resolution images (png, jpg, gif)
-                </li>
-                <li className='py-1 px-6 leading-5 text-sm text-[#6e6d7a] md:w-[50%]'>
-                  Modern image format (webp)
-                </li>
-                <li className='py-1 px-6 leading-5 text-sm text-[#6e6d7a] md:w-[50%]'>
-                  Animated gifs
-                </li>
-                <li className='py-1 px-6 leading-5 text-sm text-[#6e6d7a] md:w-[50%]'>
-                  Only upload media you own the rights to
-                </li>
-              </ul>
+              {!simple && (
+                <>
+                  <p className='text-sm mt-2 text-[#6e6d7a] text-center px-4'>
+                    Minimum 1200px width recommended. Max 2MB each (image only)
+                  </p>
+                  <ul className='mt-4 md:mt-10 flex flex-col md:flex-row flex-wrap max-w-[700px] list-disc list-inside px-4'>
+                    <li className='py-1 px-6 leading-5 text-sm text-[#6e6d7a] md:w-[50%]'>
+                      High resolution images (png, jpg, gif)
+                    </li>
+                    <li className='py-1 px-6 leading-5 text-sm text-[#6e6d7a] md:w-[50%]'>
+                      Modern image format (webp)
+                    </li>
+                    <li className='py-1 px-6 leading-5 text-sm text-[#6e6d7a] md:w-[50%]'>
+                      Animated gifs
+                    </li>
+                    <li className='py-1 px-6 leading-5 text-sm text-[#6e6d7a] md:w-[50%]'>
+                      Only upload media you own the rights to
+                    </li>
+                  </ul>
+                </>
+              )}
             </div>
           )}
 

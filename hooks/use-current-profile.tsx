@@ -1,4 +1,5 @@
 import useSWR from 'swr';
+import { useAuth } from '@clerk/nextjs';
 import type { Profile } from '@prisma/client';
 import type { User } from '@clerk/nextjs/server';
 
@@ -10,8 +11,10 @@ interface CurrentProfileData {
 }
 
 export default function useCurrentProfile() {
+  const { userId } = useAuth();
+
   const { data, isLoading, error } = useSWR<CurrentProfileData>(
-    '/api/profile',
+    userId ? '/api/profile' : null,
     fetcher
   );
 

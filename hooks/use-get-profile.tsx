@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import type { Profile } from '@prisma/client';
+import type { Profile, Work } from '@prisma/client';
 import type { User } from '@clerk/nextjs/server';
 
 import fetcher from '@/lib/fetcher';
@@ -11,6 +11,7 @@ interface GetProfileProps {
 interface GetProfileData {
   user: User;
   profile: Profile;
+  works?: Work[];
 }
 
 export default function useGetProfile({ userId }: GetProfileProps) {
