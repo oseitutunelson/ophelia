@@ -50,7 +50,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   const titleContains = typeof search === 'string' ? search : undefined;
   // accept any category string so category filtering works for all categories
-  const categoryContains = typeof category === 'string' ? category : undefined;
+  const categoryFilter = typeof category === 'string' ? decodeURIComponent(category) : undefined;
 
   const [works, totalWorks] = await db.$transaction([
     db.work.findMany({
@@ -60,7 +60,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           contains: titleContains,
           mode: 'insensitive'
         },
-        category: categoryContains
+        category: categoryFilter ? {
+          equals: categoryFilter,
+          mode: 'insensitive'
+        } : undefined
       },
       orderBy: {
         createdAt: 'desc'
@@ -72,7 +75,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           contains: titleContains,
           mode: 'insensitive'
         },
-        category: categoryContains
+        category: categoryFilter ? {
+          equals: categoryFilter,
+          mode: 'insensitive'
+        } : undefined
       }
     })
   ]);

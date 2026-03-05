@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
 
     const whereClause: any = {};
     if (category && category !== 'all') {
-      whereClause.category = category;
+      whereClause.category = decodeURIComponent(category);
     }
     if (userId) {
       whereClause.userId = userId;

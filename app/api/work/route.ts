@@ -109,7 +109,11 @@ export async function GET(req: NextRequest) {
     const titleContains = typeof search === 'string' ? search : undefined;
     const ownerUserId = typeof userId === 'string' ? userId : undefined;
     // accept any category string from the client so category filtering works for all categories
-    const categoryContains = typeof category === 'string' ? category : undefined;
+    const categoryFilter = typeof category === 'string' ? decodeURIComponent(category) : undefined;
+
+    console.log('Work API GET params:', { offset, search, category, userId, categoryFilter });
+
+    console.log('Work API GET params:', { offset, search, category, userId, categoryFilter });
 
     const works = await db.work.findMany({
       skip: typeof offset === 'string' ? parseInt(offset) : 0,
@@ -120,12 +124,19 @@ export async function GET(req: NextRequest) {
           contains: titleContains,
           mode: 'insensitive'
         },
-        category: categoryContains
+        category: categoryFilter ? {
+          equals: categoryFilter,
+          mode: 'insensitive'
+        } : undefined
       },
       orderBy: {
         createdAt: 'desc'
       }
     });
+
+    console.log(`Found ${works.length} works for category: ${categoryFilter}`);
+
+    console.log(`Found ${works.length} works for category: ${categoryFilter}`);
 
     return NextResponse.json(works);
   } catch (error) {

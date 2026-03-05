@@ -53,13 +53,13 @@ export default function Categories() {
       if (search === null) {
         router.push(`${origin}`);
       } else {
-        router.push(`${origin}?search=${search}`);
+        router.push(`${origin}?search=${encodeURIComponent(search)}`);
       }
     } else {
       if (search === null) {
-        router.push(`${origin}?category=${item}`);
+        router.push(`${origin}?category=${encodeURIComponent(item)}`);
       } else {
-        router.push(`${origin}?search=${search}&category=${item}`);
+        router.push(`${origin}?search=${encodeURIComponent(search)}&category=${encodeURIComponent(item)}`);
       }
     }
   };
