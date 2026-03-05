@@ -90,15 +90,23 @@ export default async function ProfilePage({
 
   const pageCount = Math.ceil(totalWorks / 12);
 
+  // make sure we only pass plain data to the client component
+  const headerUser = {
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    imageUrl: user.imageUrl
+  };
+
+  const headerProfile = JSON.parse(JSON.stringify(profile));
+  const headerWorks = JSON.parse(JSON.stringify(works));
+
   return (
     <section className='flex flex-col justify-start items-center lg:px-20 py-6 px-5'>
       <ProfileHeader
-        user={user}
-        profile={profile}
-        works={works}
-        isOwner={
-          loggedInUser && loggedInUser.id === profile.userId ? true : false
-        }
+        user={headerUser}
+        profile={headerProfile}
+        works={headerWorks}
       />
       <ProfileNav username={profile.username} activeNav='work' />
 

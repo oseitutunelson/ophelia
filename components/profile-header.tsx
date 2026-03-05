@@ -1,28 +1,57 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
-import { MoreHorizontal } from 'lucide-react';
-import type { User } from '@clerk/nextjs/server';
+import { useState } from 'react';
+import { MoreHorizontal, Loader2 } from 'lucide-react';
 import type { Profile, Work } from '@prisma/client';
+
+// only the fields we render are passed down to keep the object serializable
+export interface ClientUser {
+  id: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  imageUrl?: string | null;
+}
+import { useAuth } from '@clerk/nextjs';
 
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons/Icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import useFollow from '@/hooks/use-follow';
+import MessageModal from '@/components/modals/message-modal';
 
 interface ProfileHeaderProps {
-  user: User;
+  user: ClientUser;
   profile: Profile;
   works: Work[];
-  isOwner: boolean;
 }
 
 export default function ProfileHeader({
   user,
   profile,
-  works,
-  isOwner
+  works
 }: ProfileHeaderProps) {
-  const randomNumber = (min: number, max: number) => {
-    return (Math.floor(Math.random() * (max - min + 1)) + min).toLocaleString();
+  const { userId: currentUserId } = useAuth();
+  const isOwner = currentUserId === user.id;
+  const { stats, isFollowing, isLoading: followLoading, follow, unfollow } = useFollow(user.id);
+  const [messageModalOpen, setMessageModalOpen] = useState(false);
+
+  const handleFollowToggle = async () => {
+    if (isFollowing) {
+      await unfollow();
+    } else {
+      await follow();
+    }
+  };
+
+  const handleGetInTouch = () => {
+    if (!currentUserId) {
+      // Redirect to sign in
+      window.location.href = '/sign-in';
+      return;
+    }
+    setMessageModalOpen(true);
   };
 
   return (
@@ -44,7 +73,10 @@ export default function ProfileHeader({
               </h1>
               <p className='mb-2 text-[#9e9ea7]'>{profile.bio}</p>
               <div className='mt-[14px] flex space-x-3'>
-                <Button className='rounded-full h-12 px-6 font-semibold hover:opacity-80'>
+                <Button
+                  onClick={handleGetInTouch}
+                  className='rounded-full h-12 px-6 font-semibold hover:opacity-80'
+                >
                   Get in touch
                 </Button>
                 {isOwner && (
@@ -58,10 +90,13 @@ export default function ProfileHeader({
                 )}
                 {!isOwner && (
                   <Button
+                    onClick={handleFollowToggle}
+                    disabled={followLoading}
                     variant='outline'
                     className='rounded-full h-12 px-6 font-semibold shadow-none hover:bg-transparent hover:border-[#dbdbde]'
                   >
-                    Follow
+                    {followLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+                    {isFollowing ? 'Following' : 'Follow'}
                   </Button>
                 )}
                 <Button
@@ -105,15 +140,22 @@ export default function ProfileHeader({
             </h1>
             <h2 className='text-2xl lg:text-5xl font-bold'>{profile.bio}</h2>
             <div className='flex gap-3 lg:gap-6 text-[#6e6d7a] mt-4 text-sm lg:text-base'>
-              <p>{randomNumber(5000, 2000)} followers</p>
-              <p>{randomNumber(500, 100)} following</p>
-              <p>{randomNumber(5000, 100)} likes</p>
+              <p className='hover:text-[#3d3d4e] transition-colors'>
+                {stats ? stats.followers.toLocaleString() : '0'} followers
+              </p>
+              <p className='hover:text-[#3d3d4e] transition-colors'>
+                {stats ? stats.following.toLocaleString() : '0'} following
+              </p>
+              <p>{stats ? stats.likes.toLocaleString() : '0'} likes</p>
             </div>
             <div className='mt-6 flex space-x-3'>
-              <Button className='rounded-full h-12 px-6 font-semibold hover:opacity-80'>
+              <Button
+                onClick={handleGetInTouch}
+                className='rounded-full h-12 px-6 font-semibold hover:opacity-80'
+              >
                 Get in touch
               </Button>
-              {isOwner && (
+              {isOwner ? (
                 <Button
                   variant='outline'
                   className='rounded-full h-12 px-6 font-semibold shadow-none hover:bg-transparent hover:border-[#dbdbde]'
@@ -121,13 +163,15 @@ export default function ProfileHeader({
                 >
                   <Link href='/account'>Edit Profile</Link>
                 </Button>
-              )}
-              {!isOwner && (
+              ) : (
                 <Button
+                  onClick={handleFollowToggle}
+                  disabled={followLoading}
                   variant='outline'
                   className='rounded-full h-12 px-6 font-semibold shadow-none hover:bg-transparent hover:border-[#dbdbde]'
                 >
-                  Follow
+                  {followLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+                  {isFollowing ? 'Following' : 'Follow'}
                 </Button>
               )}
               <Button
@@ -141,6 +185,12 @@ export default function ProfileHeader({
           </div>
         </div>
       )}
+      <MessageModal
+        isOpen={messageModalOpen}
+        onClose={() => setMessageModalOpen(false)}
+        recipientId={user.id}
+        recipientName={`${user.firstName} ${user.lastName}`}
+      />
     </>
   );
 }

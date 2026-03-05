@@ -90,13 +90,11 @@ export default async function AboutPage({
 
   return (
     <section className='flex flex-col justify-start items-center lg:px-20 py-6 px-5'>
+      {/* serialization guard for client component */}
       <ProfileHeader
-        user={user}
-        profile={profile}
-        works={works}
-        isOwner={
-          loggedInUser && loggedInUser.id === profile.userId ? true : false
-        }
+        user={JSON.parse(JSON.stringify(user))}
+        profile={JSON.parse(JSON.stringify(profile))}
+        works={JSON.parse(JSON.stringify(works))}
       />
       <ProfileNav username={profile.username} activeNav='about' />
 

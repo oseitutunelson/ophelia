@@ -118,7 +118,7 @@ export async function DELETE(
   { params }: { params: { workId: string } }
 ) {
   try {
-    const { userId } = auth();
+    const { userId } = getAuth(req);
 
     if (!userId) {
       return NextResponse.json(

@@ -4,7 +4,7 @@ import db from '@/lib/db';
 
 export async function GET() {
   try {
-    const { userId } = auth();
+    const { userId } = getAuth(req);
     if (!userId) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },

@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = auth();
+    const { userId } = getAuth(req);
     if (!userId) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },

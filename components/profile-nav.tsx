@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 
 interface ProfileNavProps {
   username: string;
-  activeNav: string;
+  activeNav: 'work' | 'jobs' | 'about';
 }
 
 export default function ProfileNav({ username, activeNav }: ProfileNavProps) {
@@ -34,6 +34,7 @@ export default function ProfileNav({ username, activeNav }: ProfileNavProps) {
           Jobs
         </Link>
       </li>
+
       <li>
         <Link
           href={`/${username}/about`}

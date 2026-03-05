@@ -55,13 +55,17 @@ export default async function ProfileJobsPage({
 
   const pageCount = Math.ceil(totalWorks / 12);
 
+  // strip any prototypes before handing off to the client
+  const headerUser = JSON.parse(JSON.stringify(loggedInUser));
+  const headerProfile = JSON.parse(JSON.stringify(profile));
+  const headerWorks = JSON.parse(JSON.stringify(works));
+
   return (
     <section className='flex flex-col justify-start items-center lg:px-20 py-6 px-5'>
       <ProfileHeader
-        user={loggedInUser}
-        profile={profile}
-        works={works}
-        isOwner={true}
+        user={headerUser}
+        profile={headerProfile}
+        works={headerWorks}
       />
       <ProfileNav username={profile.username} activeNav='jobs' />
 
