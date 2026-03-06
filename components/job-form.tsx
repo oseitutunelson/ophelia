@@ -99,7 +99,7 @@ export default function JobForm({ job }: JobFormProps) {
       let imageUrl = values.image || '';
 
       if (file) {
-        const res = await edgestore.publicFiles.upload({
+        const res = await edgestore.publicImages.upload({
           file
         });
         imageUrl = res.url;
