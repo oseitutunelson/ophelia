@@ -31,8 +31,8 @@ export default function Navbar() {
             src='/ophelia-light.png'
             alt='ophelia logo'
             className='w-24 h-[38px]'
-            width={96}
-            height={38}
+            width={106}
+            height={48}
           />
         </Link>
         <ul className='hidden lg:flex text-sm font-semibold gap-8'>
@@ -54,9 +54,9 @@ export default function Navbar() {
         <Image
           src='/ophelia-light.png'
           alt='ophelia logo'
-          className='w-54 h-[88px]'
-          width={96}
-          height={38}
+          className='w-74 h-[98px]'
+          width={120}
+          height={68}
         />
       </Link>
 
