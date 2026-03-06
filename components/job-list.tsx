@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Job } from '@prisma/client';
 
 import JobCard from '@/components/job-card';
 import { Skeleton } from '@/components/ui/skeleton';
