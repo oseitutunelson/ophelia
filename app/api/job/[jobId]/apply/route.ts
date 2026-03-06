@@ -7,7 +7,7 @@ export async function POST(
   { params }: { params: { jobId: string } }
 ) {
   try {
-    const { userId } = getAuth(req);
+    const { userId } = auth();
     if (!userId) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
