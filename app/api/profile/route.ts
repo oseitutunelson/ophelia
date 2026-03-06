@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import type { Profile } from '@prisma/client';
 import { auth, currentUser } from '@clerk/nextjs';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     const { userId } = auth();

@@ -2,6 +2,8 @@ import { auth } from '@clerk/nextjs';
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);

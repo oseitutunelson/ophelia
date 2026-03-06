@@ -2,6 +2,8 @@ import { auth } from '@clerk/nextjs';
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 interface Params {
   jobId: string;
 }

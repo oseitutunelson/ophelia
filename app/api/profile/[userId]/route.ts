@@ -3,6 +3,8 @@ import { clerkClient } from '@clerk/nextjs';
 
 import db from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   _req: Request,
   { params }: { params: { userId: string } }
