@@ -12,6 +12,7 @@ model Profile {
   userId      String
   username    String    @unique
   bio         String?
+  profilePicture String?
   githubUrl   String?
   linkedinUrl String?
   createdAt   DateTime  @default(now())
@@ -60,6 +61,17 @@ model Bookmark {
 
   @@index([userId])
   @@index([workId])
+}
+
+model ProfileBookmark {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   // User who bookmarked
+  talentId  String   // User ID of the designer being bookmarked
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([talentId])
+  @@unique([userId, talentId])  // One bookmark per user per profile
 }
 
 model Job {

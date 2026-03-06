@@ -11,7 +11,7 @@ import SearchInput from '@/components/search-input';
 import MobileMenu from '@/components/mobile-menu';
 
 const NavLinks = [
-  { href: '/', key: 'Find talent', text: 'Find talent' },
+  { href: '/find-talent', key: 'Find talent', text: 'Find talent' },
   { href: '/', key: 'Inspiration', text: 'Inspiration' },
   { href: '/', key: 'Learn design', text: 'Learn design' },
   { href: '/jobs', key: 'Jobs', text: 'Jobs' },
