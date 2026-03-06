@@ -61,7 +61,7 @@ export default function ProfileHeader({
         <div className='w-full pt-9 pb-7 flex flex-col md:items-center justify-start'>
           <div className='flex flex-col md:flex-row'>
             <Avatar className='h-[84px] w-[84px] md:h-[120px] md:w-[120px]'>
-              <AvatarImage src={user.imageUrl || ''} alt='avatar' />
+              <AvatarImage src={user.imageUrl ?? undefined} alt='avatar' />
               <AvatarFallback>
                 {user.firstName?.charAt(0)}
                 {user.lastName?.charAt(0)}
@@ -100,6 +100,8 @@ export default function ProfileHeader({
                   </Button>
                 )}
                 <Button
+                  type='button'
+                  aria-label='More options'
                   size='icon'
                   variant='outline'
                   className='rounded-full h-12 w-12 p-0 font-semibold shadow-none hover:bg-transparent hover:border-[#dbdbde]'
@@ -129,7 +131,7 @@ export default function ProfileHeader({
           </div>
           <div className='flex flex-col'>
             <Avatar className='h-[84px] w-[84px] mb-6'>
-              <AvatarImage src={user.imageUrl || ''} alt='avatar' />
+              <AvatarImage src={user.imageUrl ?? undefined} alt='avatar' />
               <AvatarFallback>
                 {user.firstName?.charAt(0)}
                 {user.lastName?.charAt(0)}
@@ -175,6 +177,8 @@ export default function ProfileHeader({
                 </Button>
               )}
               <Button
+                type='button'
+                aria-label='More options'
                 size='icon'
                 variant='outline'
                 className='rounded-full h-12 w-12 p-0 font-semibold shadow-none hover:bg-transparent hover:border-[#dbdbde]'
