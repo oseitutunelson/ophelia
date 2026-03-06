@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     // Get all bookmarked profiles with their works
     const talents = await Promise.all(
       bookmarks.map(async bookmark => {
-        const profile = await db.profile.findUnique({
+        const profile = await db.profile.findFirst({
           where: { userId: bookmark.talentId }
         });
 
@@ -92,7 +92,7 @@ export async function POST(req: Request) {
     }
 
     // Check if profile exists
-    const profile = await db.profile.findUnique({
+    const profile = await db.profile.findFirst({
       where: { userId: talentId }
     });
 
