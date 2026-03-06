@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
         userId: true,
         username: true,
         bio: true,
+        profilePicture: true,
         githubUrl: true,
         linkedinUrl: true,
         createdAt: true,
