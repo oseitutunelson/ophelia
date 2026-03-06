@@ -15,16 +15,7 @@ export async function GET() {
     // Get all applications by the user
     const applications = await db.jobApplication.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        job: {
-          select: {
-            id: true,
-            title: true,
-            image: true
-          }
-        }
-      }
+      orderBy: { createdAt: 'desc' }
     });
 
     return NextResponse.json({
