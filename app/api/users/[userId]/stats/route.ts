@@ -1,4 +1,4 @@
-import { getAuth } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs';
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 
@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: { userId: string } }
 ) {
   try {
-    const { userId: currentUserId } = getAuth(req);
+    const { userId: currentUserId } = auth();
     const targetUserId = params.userId;
     console.log('Stats request:', { currentUserId, targetUserId });
 
