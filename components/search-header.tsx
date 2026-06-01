@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
-import { Input } from '@/components/ui/input';
 import useOrigin from '@/hooks/use-origin';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -20,47 +20,57 @@ export default function SearchHeader({ search }: SearchHeaderProps) {
   const category = searchParams.get('category');
 
   const handleSearch = () => {
-    if (category === null) {
-      router.push(`${origin}?search=${searchVal}`);
-    } else {
-      router.push(`${origin}?search=${searchVal}&category=${category}`);
-    }
+    router.push(
+      category
+        ? `${origin}?search=${searchVal}&category=${category}`
+        : `${origin}?search=${searchVal}`
+    );
   };
 
-  if (search === undefined) {
-    return null;
-  }
+  if (search === undefined) return null;
 
   return (
-    <section className='flex flex-col items-center relative'>
-      <div className='w-full h-20 bg-gradient-to-r from-[#e6fbfe] to-[#edddfb]' />
-      <form
-        action={handleSearch}
-        className='w-full flex justify-center px-4 text-center'
-      >
-        <div className='flex justify-between items-center h-16 shadow-search rounded-lg focus-within:outline-none w-full max-w-[628px] -translate-y-1/2 bg-white'>
-          <Search
-            strokeWidth={2.5}
-            className='h-5 w-5 ml-7 mr-4 text-[#9e9ea7]'
-          />
-          <Input
-            placeholder='Search...'
+    <section className='pt-[72px] bg-[hsl(var(--background))]'>
+      <div className='w-full bg-gradient-to-b from-[#f0ebe2] to-[hsl(var(--background))] py-14 px-6 flex flex-col items-center gap-6'>
+
+        {/* back link */}
+        <Link
+          href='/'
+          className='flex items-center gap-2 text-luxury-label tracking-luxury text-lux-muted hover:text-lux-black transition-colors duration-300 self-start max-w-[628px] w-full mx-auto'
+        >
+          <ArrowLeft size={13} />
+          Back to Discover
+        </Link>
+
+        {/* search input */}
+        <form
+          action={handleSearch}
+          className='w-full max-w-[628px] flex items-center gap-3 border border-lux-border bg-white focus-within:border-lux-black/30 transition-colors duration-300 px-5 h-14'
+        >
+          <Search size={16} strokeWidth={2} className='text-lux-subtle flex-shrink-0' />
+          <input
+            type='text'
+            placeholder='Search works…'
             defaultValue={search}
             onChange={(e) => setSearchVal(e.target.value)}
-            className='h-8 border-none shadow-none pl-0 focus-visible:ring-0 text-base placeholder:text-[#9e9ea7]'
+            className='flex-1 bg-transparent text-lux-black text-sm placeholder:text-lux-subtle outline-none border-none'
           />
-        </div>
-      </form>
-      {search !== undefined && search !== '' && (
-        <>
-          <h1 className='text-3xl font-bold mb-3 text-center'>
-            {search.charAt(0).toUpperCase() + search.slice(1)}
-          </h1>
-          <p className='text-[#6e6d7a] mb-3 text-center'>
-            Browse {search} designs
-          </p>
-        </>
-      )}
+        </form>
+
+        {/* result heading */}
+        {search !== '' && (
+          <div className='text-center'>
+            <h1 className='font-display text-3xl md:text-4xl font-bold text-lux-black'>
+              {search.charAt(0).toUpperCase() + search.slice(1)}
+            </h1>
+            <p className='text-lux-muted text-xs mt-2 text-luxury-label tracking-luxury'>
+              Browsing works tagged &ldquo;{search}&rdquo;
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className='divider-gold mx-6' />
     </section>
   );
 }

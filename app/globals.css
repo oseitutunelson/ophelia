@@ -2,42 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ================================================================
+   CLERK AUTH OVERRIDES — SOFT LIGHT LUXURY THEME
+   ================================================================ */
+
 .cl-card.cl-signIn-start,
 .cl-card.cl-signUp-start {
   @apply shadow-none;
 }
 
 .cl-card {
-  @apply dark:bg-background;
+  background: #ffffff !important;
+  border: 1px solid #e8e4dc !important;
 }
 
 .cl-dividerText {
-  @apply dark:text-secondary;
+  color: #b0a898 !important;
 }
 
 .cl-dividerLine,
 .cl-navbarButton.cl-active {
-  @apply dark:bg-secondary;
+  background: #f0ece6 !important;
 }
 
 .cl-navbar {
-  @apply dark:bg-slate-950;
+  background: #faf8f4 !important;
 }
 
-.cl-headerTitle {
-  @apply dark:text-foreground;
-}
-
-.cl-headerSubtitle {
-  @apply dark:text-foreground;
-}
-
+.cl-headerTitle,
+.cl-headerSubtitle,
 .cl-profileSectionTitleText {
-  @apply dark:text-foreground;
+  color: #1a1a1a !important;
 }
 
 .cl-navbarButton {
-  @apply dark:hover:bg-secondary;
+  @apply hover:bg-[#f0ece6];
 }
 
 .my-profile .cl-userProfile-root {
@@ -45,11 +44,11 @@
 }
 
 .cl-navbar {
-  @apply border-r border-secondary;
+  border-right: 1px solid #e8e4dc !important;
 }
 
 .cl-userButtonPopoverActionButton {
-  @apply dark:hover:bg-secondary;
+  @apply hover:bg-[#f0ece6];
 }
 
 .cl-formFieldInputShowPasswordButton {
@@ -57,11 +56,12 @@
 }
 
 .cl-badge {
-  @apply text-white bg-zinc-900/50;
+  color: #1a1a1a !important;
+  background: #f0ece6 !important;
 }
 
 .cl-accordionTriggerButton p {
-  @apply dark:text-secondary-foreground;
+  color: #6b6b6b !important;
 }
 
 .cl-page p,
@@ -75,170 +75,363 @@
 .cl-userPreviewTextContainer p,
 .cl-userButtonPopoverActionButton svg,
 .cl-userButtonPopoverActionButton span {
-  @apply dark:text-foreground;
+  color: #1a1a1a !important;
 }
 
 .cl-avatarImageActionsUpload {
-  @apply text-zinc-900/90;
+  color: #1a1a1a !important;
 }
 
 .my-profile .cl-userProfile-root .cl-card {
-  @apply rounded-lg shadow-none w-full max-w-full;
+  @apply shadow-none w-full max-w-full rounded-none;
 }
 
 .cl-navbarMobileMenuButton,
 .cl-accordionTriggerButton {
-  @apply focus:shadow-none focus:ring-2 ring-zinc-900/50;
+  @apply focus:shadow-none;
 }
 
 .cl-userButtonTrigger {
-  @apply focus:shadow-none focus:ring ring-zinc-900/50 hover:opacity-80;
+  @apply focus:shadow-none hover:opacity-80;
 }
 
 .cl-userButtonPopoverCard {
-  @apply shadow-lg border border-gray-100 rounded-lg dark:border-secondary;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid #e8e4dc !important;
+  border-radius: 2px !important;
+  background: #ffffff !important;
 }
 
 .cl-formFieldInput {
-  @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring;
+  background: #faf8f4 !important;
+  color: #1a1a1a !important;
+  border-color: #e8e4dc !important;
+  @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#c9a96e]/50;
 }
 
 .cl-socialButtonsBlockButton {
-  @apply focus:shadow-none dark:hover:bg-secondary dark:text-foreground dark:border-secondary;
+  background: transparent !important;
+  border-color: #e8e4dc !important;
+  color: #1a1a1a !important;
+  @apply focus:shadow-none hover:bg-[#f0ece6];
 }
 
 .cl-navbarButton,
 .cl-profileSectionContent button {
-  @apply focus:shadow-none focus:ring-2 ring-zinc-900/50 dark:text-foreground dark:hover:bg-secondary;
+  color: #1a1a1a !important;
+  @apply focus:shadow-none hover:bg-[#f0ece6];
 }
 
 .cl-formButtonReset {
-  @apply text-gray-900 hover:bg-secondary focus:shadow-none focus:ring-2 ring-zinc-900/50 dark:text-foreground;
+  color: #1a1a1a !important;
+  @apply hover:bg-[#f0ece6] focus:shadow-none;
 }
 
 .cl-footerActionLink {
-  @apply text-zinc-900 hover:text-zinc-900/90 active:text-zinc-900/90 focus:shadow-none dark:text-slate-500/50 dark:hover:text-foreground;
+  color: #c9a96e !important;
+  @apply focus:shadow-none hover:opacity-80;
 }
 
 .cl-profileSectionPrimaryButton {
-  @apply hover:bg-zinc-900/50 active:bg-zinc-900/50 text-zinc-900 hover:text-white font-extrabold focus:shadow-none focus:ring-2 ring-zinc-900/50;
+  color: #c9a96e !important;
+  @apply focus:shadow-none hover:bg-[#c9a96e]/10;
 }
 
 .cl-formButtonPrimary {
-  @apply bg-zinc-900 hover:bg-zinc-900/90 active:bg-zinc-900/90 focus:shadow-none dark:disabled:bg-secondary-foreground dark:disabled:text-primary-foreground dark:bg-secondary dark:hover:bg-slate-700 dark:text-secondary-foreground;
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+  @apply focus:shadow-none font-semibold hover:opacity-90;
 }
 
-.bg-card-info {
-  background: linear-gradient(
-    180deg,
-    transparent 62%,
-    rgba(0, 0, 0, 0.00345888) 63.94%,
-    rgba(0, 0, 0, 0.014204) 65.89%,
-    rgba(0, 0, 0, 0.0326639) 67.83%,
-    rgba(0, 0, 0, 0.0589645) 69.78%,
-    rgba(0, 0, 0, 0.0927099) 71.72%,
-    rgba(0, 0, 0, 0.132754) 73.67%,
-    rgba(0, 0, 0, 0.177076) 75.61%,
-    rgba(0, 0, 0, 0.222924) 77.56%,
-    rgba(0, 0, 0, 0.267246) 79.5%,
-    rgba(0, 0, 0, 0.30729) 81.44%,
-    rgba(0, 0, 0, 0.341035) 83.39%,
-    rgba(0, 0, 0, 0.367336) 85.33%,
-    rgba(0, 0, 0, 0.385796) 87.28%,
-    rgba(0, 0, 0, 0.396541) 89.22%,
-    rgba(0, 0, 0, 0.4) 91.17%
-  );
-}
+/* ================================================================
+   LUXURY LIGHT DESIGN TOKENS
+   ================================================================ */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Warm off-white luxury palette */
+    --background: 38 25% 96%;
+    --foreground: 0 0% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 10%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Gold accent */
+    --primary: 38 50% 61%;
+    --primary-foreground: 0 0% 4%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 36 15% 91%;
+    --secondary-foreground: 0 0% 10%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 36 15% 94%;
+    --muted-foreground: 0 0% 42%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 36 15% 91%;
+    --accent-foreground: 0 0% 10%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 36 12% 87%;
+    --input: 36 12% 92%;
+    --ring: 38 50% 61%;
 
-    --radius: 0.5rem;
+    --radius: 0.125rem;
+
+    /* Luxury custom tokens */
+    --gold: #c9a96e;
+    --gold-warm: #e8d5a3;
+    --gold-deep: #a07840;
+    --lux-bg: #f7f5f0;
+    --lux-surface: #ffffff;
+    --lux-border: #e5e1d9;
+    --lux-hover: #f0ece6;
+    --lux-black: #1a1a1a;
+    --lux-dark: #2e2e2e;
+    --lux-mid: #6b6b6b;
+    --lux-muted: #b0a898;
+    --lux-subtle: #d0c8be;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --background: 0 0% 3.9%;
+    --foreground: 36 25% 95%;
+    --card: 0 0% 7%;
+    --card-foreground: 36 25% 95%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 36 25% 95%;
+    --primary: 38 50% 61%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 72%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 52%;
+    --accent: 0 0% 13%;
+    --accent-foreground: 36 25% 95%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 13%;
+    --input: 0 0% 10%;
+    --ring: 38 50% 61%;
   }
 }
+
+/* ================================================================
+   BASE STYLES
+   ================================================================ */
 
 @layer base {
   * {
     @apply border-border;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Warm paper grain overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.9'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: multiply;
+  }
+
+  /* Refined scrollbar for light theme */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(180, 160, 120, 0.35);
+    border-radius: 0;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(180, 160, 120, 0.6);
   }
 }
+
+/* ================================================================
+   CARD INFO GRADIENT (work card hover overlay)
+   ================================================================ */
+
+.bg-card-info {
+  background: linear-gradient(
+    180deg,
+    transparent 35%,
+    rgba(20, 16, 12, 0.008) 45%,
+    rgba(20, 16, 12, 0.05) 55%,
+    rgba(20, 16, 12, 0.18) 65%,
+    rgba(20, 16, 12, 0.42) 75%,
+    rgba(20, 16, 12, 0.62) 84%,
+    rgba(20, 16, 12, 0.76) 92%,
+    rgba(20, 16, 12, 0.82) 100%
+  );
+}
+
+/* ================================================================
+   TYPOGRAPHY UTILITIES
+   ================================================================ */
+
+.font-display {
+  font-family: var(--font-playfair), 'Cormorant Garamond', Georgia, serif;
+}
+
+.text-luxury-label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-family: var(--font-inter), sans-serif;
+}
+
+.text-gold {
+  color: #c9a96e;
+}
+
+.luxury-gradient-text {
+  background: linear-gradient(135deg, #1a1a1a 0%, #c9a96e 50%, #2e2e2e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ================================================================
+   ANIMATION KEYFRAMES
+   ================================================================ */
+
+@keyframes slideup {
+  from { opacity: 0; transform: translateY(15%) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes luxuryFadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -800px 0; }
+  100% { background-position: 800px 0; }
+}
+
+/* ================================================================
+   ANIMATION CLASSES
+   ================================================================ */
 
 .animate-slide-up {
   animation: slideup 200ms ease-in-out;
 }
 
-@keyframes slideup {
-  from {
-    opacity: 0;
-    transform: translateY(15%) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.animate-luxury-fade-up {
+  animation: luxuryFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+.animate-marquee {
+  animation: marquee 38s linear infinite;
+  will-change: transform;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ================================================================
+   LUXURY UTILITY CLASSES
+   ================================================================ */
+
+/* Warm glass effect */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(228, 220, 208, 0.7);
+}
+
+/* Gold border */
+.border-gold {
+  border-color: rgba(201, 169, 110, 0.4);
+}
+
+/* Luxury hover lift */
+.luxury-hover {
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.luxury-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* Warm gold divider */
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(to right, transparent 0%, rgba(201, 169, 110, 0.4) 50%, transparent 100%);
+}
+
+/* Shimmer skeleton */
+.shimmer {
+  background: linear-gradient(90deg, #f0ece6 25%, #f7f4ee 50%, #f0ece6 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+/* Search shadow */
 .shadow-search {
-  -webkit-box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.06);
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Soft radial glow */
+.radial-glow {
+  background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201, 169, 110, 0.08) 0%, transparent 70%);
+}
+
+/* Image zoom on hover */
+.img-zoom {
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.group:hover .img-zoom {
+  transform: scale(1.05);
+}
+
+/* 3D preserve for fashion hero */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* Clip-path will-change hint */
+.fashion-reveal {
+  will-change: clip-path;
 }

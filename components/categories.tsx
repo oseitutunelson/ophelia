@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import useOrigin from '@/hooks/use-origin';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const categories = [
+const CATEGORIES = [
   'Discover',
   'Animation',
   'Branding',
@@ -28,80 +28,73 @@ export default function Categories() {
   const origin = useOrigin();
   const searchParams = useSearchParams();
 
-  const search = searchParams.get('search');
+  const search   = searchParams.get('search');
   const category = searchParams.get('category');
 
-  const horizontalRef = useRef<HTMLUListElement>(null);
-  const { refXOverflowing, refXScrollBegin, refXScrollEnd } =
-    useOverflow(horizontalRef);
+  const listRef = useRef<HTMLUListElement>(null);
+  const { refXOverflowing, refXScrollBegin, refXScrollEnd } = useOverflow(listRef);
 
-  const handleClick = (direction: string) => {
-    if (horizontalRef.current) {
-      const { scrollLeft, clientWidth } = horizontalRef.current;
-
-      const scrollTo =
-        direction === 'left'
-          ? scrollLeft - clientWidth
-          : scrollLeft + clientWidth;
-
-      horizontalRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
-    }
+  const scroll = (dir: 'left' | 'right') => {
+    if (!listRef.current) return;
+    const { scrollLeft, clientWidth } = listRef.current;
+    listRef.current.scrollTo({
+      left: dir === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth,
+      behavior: 'smooth'
+    });
   };
 
   const handleFilter = (item: string) => {
     if (item === 'Discover') {
-      if (search === null) {
-        router.push(`${origin}`);
-      } else {
-        router.push(`${origin}?search=${encodeURIComponent(search)}`);
-      }
+      router.push(search ? `${origin}?search=${encodeURIComponent(search)}` : origin);
     } else {
-      if (search === null) {
-        router.push(`${origin}?category=${encodeURIComponent(item)}`);
-      } else {
-        router.push(`${origin}?search=${encodeURIComponent(search)}&category=${encodeURIComponent(item)}`);
-      }
+      router.push(
+        search
+          ? `${origin}?search=${encodeURIComponent(search)}&category=${encodeURIComponent(item)}`
+          : `${origin}?category=${encodeURIComponent(item)}`
+      );
     }
   };
 
+  const isActive = (item: string) =>
+    item === category || (item === 'Discover' && category === null);
+
   return (
     <div className='overflow-x-auto overflow-y-hidden relative'>
-      <span
-        onClick={() => handleClick('left')}
-        className={cn(
-          'w-10 h-9 absolute left-0 z-10 flex items-center justify-start bg-gradient-to-l from-transparent from-0% to-white to-50% hover:cursor-pointer',
-          !refXOverflowing && 'hidden',
-          refXScrollBegin && 'hidden'
-        )}
-      >
-        <ChevronLeft size={18} />
-      </span>
-      <span
-        onClick={() => handleClick('right')}
-        className={cn(
-          'w-10 h-9 absolute right-0 z-10 flex items-center justify-end bg-gradient-to-r from-transparent from-0% to-white to-50% hover:cursor-pointer',
-          !refXOverflowing && 'hidden',
-          refXScrollEnd && 'hidden'
-        )}
-      >
-        <ChevronRight size={18} />
-      </span>
+      {/* left scroll fade */}
+      {refXOverflowing && !refXScrollBegin && (
+        <button
+          onClick={() => scroll('left')}
+          className='absolute left-0 top-0 bottom-0 z-10 flex items-center pl-0 pr-6 bg-gradient-to-r from-[hsl(var(--background))] via-[hsl(var(--background))]/80 to-transparent'
+          aria-label='Scroll left'
+        >
+          <ChevronLeft size={15} className='text-lux-muted' />
+        </button>
+      )}
+      {/* right scroll fade */}
+      {refXOverflowing && !refXScrollEnd && (
+        <button
+          onClick={() => scroll('right')}
+          className='absolute right-0 top-0 bottom-0 z-10 flex items-center pr-0 pl-6 bg-gradient-to-l from-[hsl(var(--background))] via-[hsl(var(--background))]/80 to-transparent'
+          aria-label='Scroll right'
+        >
+          <ChevronRight size={15} className='text-lux-muted' />
+        </button>
+      )}
+
       <ul
-        ref={horizontalRef}
-        className='overflow-x-auto overflow-y-hidden flex gap-2 px-[2px] whitespace-nowrap scroll-smooth scrollbar-hide'
+        ref={listRef}
+        className='flex gap-1 px-0.5 whitespace-nowrap overflow-x-auto scroll-smooth scrollbar-hide'
       >
-        {categories.map((item, index) => (
-          <li key={index}>
+        {CATEGORIES.map((item, i) => (
+          <li key={i}>
             <button
-              onClick={() => handleFilter(item)}
               type='button'
+              onClick={() => handleFilter(item)}
               className={cn(
-                'inline-flex items-center h-9 px-4 rounded-full text-sm font-semibold leading-5 hover:opacity-70 hover:cursor-pointer',
-                index === 0 && refXOverflowing && '-ml-4',
-                index === item.length - 1 && refXOverflowing && '-mr-4',
-                (item === category ||
-                  (item === 'Discover' && category === null)) &&
-                  'bg-[#f8f7f4]'
+                'inline-flex items-center h-8 px-4 text-luxury-label tracking-luxury transition-all duration-300',
+                isActive(item)
+                  ? 'text-lux-black border-b border-lux-black'
+                  : 'text-lux-muted hover:text-lux-mid border-b border-transparent'
               )}
             >
               {item}

@@ -34,18 +34,18 @@ export default function SearchInput() {
   return (
     <>
       <form action={handleSearch}>
-        <div className='hidden xl:flex justify-between items-center h-12 rounded-full focus-within:outline-none focus-within:ring-0 bg-[#f4f5fb]'>
-          <Search className='h-5 w-5 ms-5 me-2 text-muted-foreground' />
+        <div className='hidden xl:flex items-center h-9 border border-lux-border focus-within:border-lux-black/25 bg-white transition-colors duration-300 px-3 gap-2'>
+          <Search className='h-3.5 w-3.5 text-lux-subtle flex-shrink-0' />
           <Input
             onChange={(e) => setSearchVal(e.target.value)}
             placeholder='Search...'
-            className='h-8 border-none shadow-none pl-0 focus-visible:ring-0'
+            className='h-7 border-none shadow-none pl-0 focus-visible:ring-0 bg-transparent text-lux-black placeholder:text-lux-subtle text-sm w-36'
           />
         </div>
       </form>
       <Search
         onClick={handleMobileSearch}
-        className='h-[22px] w-[22px] xl:hidden'
+        className='h-5 w-5 xl:hidden text-lux-mid hover:text-lux-black transition-colors duration-300 cursor-pointer'
       />
     </>
   );

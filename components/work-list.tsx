@@ -2,13 +2,12 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 import type { Work } from '@prisma/client';
 
 import { cn } from '@/lib/utils';
 import WorkPage from '@/components/work-page';
-import { Button } from '@/components/ui/button';
 import WorkInitialPage from '@/components/work-initial-page';
 
 interface WorkListProps {
@@ -28,131 +27,131 @@ export default function WorkList({
   userId,
   userFullname
 }: WorkListProps) {
-  const [count, setCount] = useState(1);
+  const [count, setCount]     = useState(1);
   const [loading, setLoading] = useState(false);
+  const gridRef               = useRef<HTMLElement>(null);
 
   const pages = [
     <WorkInitialPage key={1} initialData={initialData} isProfile={isProfile} />
   ];
   for (let i = 2; i <= count; i++) {
     pages.push(
-      <WorkPage
-        index={i}
-        key={i}
-        setLoading={setLoading}
-        isProfile={isProfile}
-        userId={userId}
-      />
+      <WorkPage key={i} index={i} setLoading={setLoading} isProfile={isProfile} userId={userId} />
     );
   }
 
+  /* GSAP stagger entrance */
+  useEffect(() => {
+    if (!initialData.length) return;
+    let cleanup: (() => void) | undefined;
+
+    const run = async () => {
+      const { gsap }         = await import('gsap');
+      const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+      gsap.registerPlugin(ScrollTrigger);
+
+      const cards = document.querySelectorAll<HTMLElement>('.work-card-item');
+      if (!cards.length) return;
+
+      gsap.fromTo(cards,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1, y: 0,
+          duration: 0.7,
+          ease: 'power3.out',
+          stagger: 0.05,
+          scrollTrigger: {
+            trigger: gridRef.current,
+            start: 'top 88%',
+            once: true
+          }
+        }
+      );
+      cleanup = () => ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+    run();
+    return () => cleanup?.();
+  }, [initialData]);
+
   return (
     <>
-      {/* no results fallback for landing page */}
+      {/* no results */}
       {initialData.length === 0 && !isProfile && (
-        <section className='w-full pt-4 lg:pt-8 flex flex-col items-center'>
-          <div className='relative inline-flex mb-5'>
-            <Image
-              src='/no-results.png'
-              alt='no results'
-              width={510}
-              height={383}
-            />
-            <span className='absolute right-[60px] bottom-[20px] md:right-[120px] md:bottom-[40px] text-[#dbdbde] text-xs'>
-              Art by{' '}
-              <Link href='/' className='underline'>
-                Misha
-              </Link>
+        <section className='w-full pt-8 lg:pt-14 flex flex-col items-center gap-5'>
+          <div className='relative inline-flex mb-3'>
+            <Image src='/no-results.png' alt='no results' width={400} height={300} className='opacity-60' />
+            <span className='absolute right-14 bottom-4 text-lux-subtle text-xs'>
+              Art by <Link href='/' className='underline text-lux-muted'>Misha</Link>
             </span>
           </div>
-          <h3 className='text-2xl mb-5 font-bold text-center'>
-            No results found
-          </h3>
-          <p className='mb-5 text-[#6e6d7a] text-center'>
-            It seems we can’t find any results based on your search.
+          <h3 className='font-display text-2xl font-bold text-lux-black text-center'>No results found</h3>
+          <p className='text-lux-mid text-sm text-center max-w-xs'>
+            We couldn't find anything matching your search.
           </p>
         </section>
       )}
 
-      {/* no results fallback for other's profile page */}
+      {/* empty: other's profile */}
       {initialData.length === 0 && isProfile && !isOwner && (
-        <section className='w-full pt-4 lg:pt-8 flex flex-col items-center my-[90px]'>
-          <Image
-            src='/no-works.jpg'
-            alt='no works'
-            width={190}
-            height={190}
-            className='mb-6'
-          />
-          <h4 className='mb-3 text-xl font-medium text-center'>No works :(</h4>
-          <p className='text-sm text-center max-w-[325px]'>
-            It looks like{' '}
-            {typeof userFullname === 'string' ? userFullname : 'this user'}{' '}
-            hasn’t uploaded any shots yet. Check back soon!
+        <section className='w-full pt-8 flex flex-col items-center my-20 gap-5'>
+          <Image src='/no-works.jpg' alt='no works' width={160} height={160} className='opacity-50 rounded-full' />
+          <h4 className='font-display text-xl font-semibold text-lux-black text-center'>No works yet</h4>
+          <p className='text-sm text-lux-mid text-center max-w-xs'>
+            {typeof userFullname === 'string' ? userFullname : 'This designer'} hasn't uploaded any work yet.
           </p>
         </section>
       )}
 
-      {/* no results fallback for owner's profile page */}
+      {/* empty: owner's profile */}
       {initialData.length === 0 && isProfile && isOwner && (
-        <section className='w-full gap-9 pt-4 lg:pt-8 grid md:grid-cols-2 lg:grid-cols-3 xl:gap-12'>
-          <div className='w-full flex flex-col items-center justify-center text-center h-[270px] xl:h-[360px] border-[2px] border-dashed border-[#e7e7e9] rounded-lg'>
-            <div className='mb-[3%] lg:hidden xl:block'>
-              <div className='w-[10%] my-0 h-[28px] mx-auto pb-[6%] pl-[10%] after:border-b-[28px] after:border-[#787eff] after:ml-[-28px] after:border-x-transparent after:border-x-[28px] after:w-0 after:h-0 after:content-[""] after:block' />
-              <div className='w-[10%] my-0 h-[28px] mx-auto pb-[6%] pl-[10%] after:border-b-[28px] after:border-[#4d44c6] after:ml-[-28px] after:border-x-transparent after:border-x-[28px] after:w-0 after:h-0 after:content-[""] after:block' />
-            </div>
-            <h2 className='text-xl lg:text-xl xl:text-2xl font-bold mb-2'>
-              Upload your first work
-            </h2>
-            <div className='w-[80%] max-w-[340px] mx-auto'>
-              <p className='mb-[5%]'>
-                Show off your best work. Get feedback, likes and be a part of a
-                growing community.
-              </p>
-            </div>
-            <Button
-              className='rounded-full font-semibold hover:opacity-80 text-xs'
-              asChild
+        <section className='w-full gap-8 pt-6 grid md:grid-cols-2 lg:grid-cols-3'>
+          <div className='w-full flex flex-col items-center justify-center text-center h-[270px] xl:h-[360px] border border-dashed border-lux-border hover:border-gold/50 transition-colors duration-500 bg-lux-hover/30'>
+            <h2 className='text-xl font-display font-bold text-lux-black mb-2'>Upload your first work</h2>
+            <p className='mb-5 text-lux-mid text-sm max-w-[240px]'>
+              Show off your best work and connect with the creative community.
+            </p>
+            <Link
+              href='/upload-new'
+              className='inline-flex items-center text-luxury-label tracking-luxury text-white bg-lux-black hover:bg-lux-dark transition-colors duration-300 px-5 py-2.5 font-semibold'
             >
-              <Link href='/upload-new'>Upload your first work</Link>
-            </Button>
+              Upload First Work
+            </Link>
           </div>
           {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className='w-full h-[225px] xl:h-[360px] rounded-lg bg-gradient-to-b from-black/[0.03] to-transparent'
-            />
+            <div key={i} className='w-full h-[225px] xl:h-[360px] bg-gradient-to-b from-lux-border/30 to-transparent' />
           ))}
         </section>
       )}
 
-      {/* display work listing results */}
+      {/* work grid */}
       {initialData.length > 0 && (
         <section
+          ref={gridRef}
+          id='works'
           className={cn(
-            'w-full gap-9 pt-4 lg:pt-8 grid md:grid-cols-2 lg:grid-cols-3',
+            'w-full gap-8 pt-6 grid md:grid-cols-2 lg:grid-cols-3',
             !isProfile && 'xl:grid-cols-4',
-            isProfile && 'xl:gap-12'
+            isProfile  && 'xl:gap-10'
           )}
         >
           {pages}
         </section>
       )}
 
+      {/* load more */}
       {count < pageCount && !loading ? (
-        <div className='mt-14 h-9'>
-          <Button
-            onClick={() => setCount((currentCount) => currentCount + 1)}
-            variant='secondary'
-            className='bg-[#f8f7f4] rounded-full py-[10px] px-5 hover:bg-[#f5f3f0] text-[13px] font-semibold'
+        <div className='mt-14 flex justify-center'>
+          <button
+            onClick={() => setCount((c) => c + 1)}
+            className='text-luxury-label tracking-luxury text-lux-mid hover:text-lux-black border border-lux-border hover:border-lux-black/30 px-8 py-3 transition-all duration-300 bg-white'
           >
-            Load more work
-          </Button>
+            Load More Work
+          </button>
         </div>
       ) : loading ? (
-        <div className='flex items-center mt-14 h-9'>
-          <Loader2 className='animate-spin mr-2 text-pink-500' size={18} />
-          Loading more...
+        <div className='flex items-center justify-center mt-14 gap-2 text-lux-mid'>
+          <Loader2 className='animate-spin' size={16} />
+          <span className='text-sm'>Loading…</span>
         </div>
       ) : (
         <div className='mt-14 h-9' />
