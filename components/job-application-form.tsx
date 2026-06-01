@@ -150,7 +150,7 @@ export default function JobApplicationForm({ jobId, onSuccess }: JobApplicationF
                     <SelectValue placeholder='Choose a project' />
                   </SelectTrigger>
                   <SelectContent className='rounded-none border-lux-border'>
-                    {profileData.works.map((work: Work) => (
+                    {(profileData?.works ?? []).map((work: Work) => (
                       <SelectItem key={work.id} value={work.id}>{work.title}</SelectItem>
                     ))}
                   </SelectContent>
