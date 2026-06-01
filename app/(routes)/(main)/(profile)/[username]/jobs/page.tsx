@@ -61,7 +61,7 @@ export default async function ProfileJobsPage({
   const headerWorks = JSON.parse(JSON.stringify(works));
 
   return (
-    <section className='flex flex-col justify-start items-center lg:px-20 py-6 px-5'>
+    <section className='flex flex-col justify-start items-center lg:px-20 pt-[72px] px-5'>
       <ProfileHeader
         user={headerUser}
         profile={headerProfile}

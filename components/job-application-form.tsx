@@ -2,17 +2,14 @@
 
 import { useState } from 'react';
 import axios from 'axios';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowRight } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
 import { Work } from '@prisma/client';
 
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger
@@ -32,79 +29,57 @@ interface JobApplicationFormProps {
 }
 
 export default function JobApplicationForm({ jobId, onSuccess }: JobApplicationFormProps) {
-  const { userId } = useAuth();
-  const { toast } = useToast();
-  const { data: profileData, isLoading: profileLoading } = useGetProfile({
-    userId: userId!
-  });
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [workId, setWorkId] = useState<string>('');
-  const [portfolioUrl, setPortfolioUrl] = useState('');
-  const [shareType, setShareType] = useState<'work' | 'link'>('work');
+  const { userId }    = useAuth();
+  const { toast }     = useToast();
+  const { data: profileData, isLoading: profileLoading } = useGetProfile({ userId: userId! });
+
+  const [isOpen,        setIsOpen]        = useState(false);
+  const [isLoading,     setIsLoading]     = useState(false);
+  const [message,       setMessage]       = useState('');
+  const [workId,        setWorkId]        = useState('');
+  const [portfolioUrl,  setPortfolioUrl]  = useState('');
+  const [shareType,     setShareType]     = useState<'work' | 'link'>('work');
 
   if (!userId) {
     return (
-      <Button className='rounded-full px-8 font-semibold' disabled>
+      <button
+        disabled
+        className='text-luxury-label tracking-luxury text-lux-muted border border-lux-border px-8 py-3 cursor-not-allowed opacity-60'
+      >
         Sign in to Apply
-      </Button>
+      </button>
     );
   }
 
   const handleSubmit = async () => {
     if (!message.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please write a message',
-        variant: 'destructive'
-      });
+      toast({ description: 'Please write a message', variant: 'destructive' });
       return;
     }
-
     if (shareType === 'work' && !workId) {
-      toast({
-        title: 'Error',
-        description: 'Please select a project from your portfolio',
-        variant: 'destructive'
-      });
+      toast({ description: 'Please select a project from your portfolio', variant: 'destructive' });
       return;
     }
-
     if (shareType === 'link' && !portfolioUrl.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please provide a portfolio link',
-        variant: 'destructive'
-      });
+      toast({ description: 'Please provide a portfolio link', variant: 'destructive' });
       return;
     }
 
     setIsLoading(true);
     try {
-      const res = await axios.post(`/api/job/${jobId}/apply`, {
+      const r = await axios.post(`/api/job/${jobId}/apply`, {
         message,
-        workId: shareType === 'work' ? workId : null,
+        workId:       shareType === 'work' ? workId       : null,
         portfolioUrl: shareType === 'link' ? portfolioUrl : null
       });
-
-      if (res.data?.success) {
-        toast({
-          title: 'Success',
-          description: 'Application sent successfully!'
-        });
-        setMessage('');
-        setWorkId('');
-        setPortfolioUrl('');
+      if (r.data?.success) {
+        toast({ description: 'Application submitted successfully' });
+        setMessage(''); setWorkId(''); setPortfolioUrl('');
         setIsOpen(false);
         onSuccess?.();
       }
     } catch (err: any) {
-      toast({
-        title: 'Error',
-        description: err.response?.data?.message || 'Failed to submit application',
-        variant: 'destructive'
-      });
+      toast({ description: err.response?.data?.message || 'Failed to submit application', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
@@ -113,107 +88,114 @@ export default function JobApplicationForm({ jobId, onSuccess }: JobApplicationF
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className='rounded-full h-9 px-6 font-semibold hover:opacity-80'>
+        <button className='group inline-flex items-center gap-2 bg-lux-black hover:bg-lux-dark text-white px-8 py-3.5 text-luxury-label tracking-luxury font-semibold transition-colors duration-300'>
           Apply Now
-        </Button>
+          <ArrowRight size={12} className='transition-transform duration-300 group-hover:translate-x-0.5' />
+        </button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-md'>
-        <DialogHeader>
-          <DialogTitle>Apply for This Job</DialogTitle>
-          <DialogDescription>
-            Tell the employer about yourself and share your work
-          </DialogDescription>
+
+      <DialogContent className='sm:max-w-lg border-lux-border rounded-none p-0 gap-0'>
+        <DialogHeader className='px-8 pt-8 pb-6 border-b border-lux-border'>
+          <DialogTitle className='font-display text-2xl font-bold text-lux-black'>
+            Apply for this Role
+          </DialogTitle>
+          <p className='text-sm text-lux-mid mt-1'>
+            Tell the team about yourself and share your work.
+          </p>
         </DialogHeader>
 
-        <div className='space-y-4'>
+        <div className='px-8 py-7 space-y-6'>
+
           {/* Message */}
-          <div>
-            <label className='text-sm font-medium text-[#3d3d4e] mb-2 block'>
+          <div className='space-y-2'>
+            <label className='text-luxury-label tracking-luxury text-lux-muted block'>
               Your Message *
             </label>
-            <Textarea
-              placeholder='Introduce yourself and explain why you&apos;re interested in this position...'
+            <textarea
+              placeholder='Introduce yourself and explain why you are a great fit for this role…'
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className='min-h-24 resize-none'
+              rows={4}
+              className='w-full px-4 py-3 border border-lux-border bg-white text-lux-black text-sm placeholder:text-lux-subtle focus:outline-none focus:border-lux-black/30 transition-colors duration-200 resize-none'
             />
           </div>
 
-          {/* Share Type Selection */}
-          <div>
-            <label className='text-sm font-medium text-[#3d3d4e] mb-2 block'>
-              How to Share Your Work *
+          {/* Share type */}
+          <div className='space-y-2'>
+            <label className='text-luxury-label tracking-luxury text-lux-muted block'>
+              Share Your Work *
             </label>
             <Select value={shareType} onValueChange={(v) => setShareType(v as 'work' | 'link')}>
-              <SelectTrigger>
+              <SelectTrigger className='border-lux-border rounded-none h-11 text-sm'>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className='rounded-none border-lux-border'>
                 <SelectItem value='work'>Select from my portfolio</SelectItem>
                 <SelectItem value='link'>Share a link</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {/* Work Selection or URL Input */}
+          {/* Portfolio work / URL */}
           {shareType === 'work' ? (
-            <div>
-              <label className='text-sm font-medium text-[#3d3d4e] mb-2 block'>
+            <div className='space-y-2'>
+              <label className='text-luxury-label tracking-luxury text-lux-muted block'>
                 Select Project *
               </label>
               {profileLoading ? (
-                <p className='text-sm text-[#9e9ea7]'>Loading your projects...</p>
-              ) : profileData?.works && profileData.works.length > 0 ? (
+                <p className='text-sm text-lux-muted'>Loading your projects…</p>
+              ) : profileData?.works?.length > 0 ? (
                 <Select value={workId} onValueChange={setWorkId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder='Select a project' />
+                  <SelectTrigger className='border-lux-border rounded-none h-11 text-sm'>
+                    <SelectValue placeholder='Choose a project' />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className='rounded-none border-lux-border'>
                     {profileData.works.map((work: Work) => (
-                      <SelectItem key={work.id} value={work.id}>
-                        {work.title}
-                      </SelectItem>
+                      <SelectItem key={work.id} value={work.id}>{work.title}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               ) : (
-                <p className='text-sm text-[#9e9ea7]'>
-                  You haven&apos;t posted any projects yet. Please share a link instead.
+                <p className='text-sm text-lux-muted'>
+                  No projects uploaded yet — share a link instead.
                 </p>
               )}
             </div>
           ) : (
-            <div>
-              <label className='text-sm font-medium text-[#3d3d4e] mb-2 block'>
+            <div className='space-y-2'>
+              <label className='text-luxury-label tracking-luxury text-lux-muted block'>
                 Portfolio Link *
               </label>
               <input
                 type='url'
-                placeholder='https://your-portfolio.com or github.com/username'
+                placeholder='https://your-portfolio.com'
                 value={portfolioUrl}
                 onChange={(e) => setPortfolioUrl(e.target.value)}
-                className='w-full px-3 py-2 border border-[#e7e7e9] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                className='w-full px-4 py-3 border border-lux-border bg-white text-lux-black text-sm placeholder:text-lux-subtle focus:outline-none focus:border-lux-black/30 transition-colors duration-200'
               />
             </div>
           )}
         </div>
 
-        <div className='flex gap-2 justify-end'>
-          <Button
-            variant='outline'
+        {/* Footer */}
+        <div className='px-8 pb-8 flex items-center justify-end gap-3 border-t border-lux-border pt-5'>
+          <button
+            type='button'
             onClick={() => setIsOpen(false)}
             disabled={isLoading}
+            className='px-6 py-2.5 text-luxury-label tracking-luxury text-lux-mid hover:text-lux-black border border-lux-border hover:border-lux-black/30 transition-all duration-200'
           >
             Cancel
-          </Button>
-          <Button
+          </button>
+          <button
+            type='button'
             onClick={handleSubmit}
             disabled={isLoading}
-            className='rounded-full'
+            className='inline-flex items-center gap-2 bg-lux-black hover:bg-lux-dark text-white px-7 py-2.5 text-luxury-label tracking-luxury font-semibold transition-colors duration-300 disabled:opacity-60'
           >
-            {isLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+            {isLoading && <Loader2 size={13} className='animate-spin' />}
             Submit Application
-          </Button>
+          </button>
         </div>
       </DialogContent>
     </Dialog>

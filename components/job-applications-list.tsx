@@ -6,9 +6,9 @@ import { Check, X, ExternalLink, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/components/ui/use-toast';
+import { cn } from '@/lib/utils';
 
 interface Application {
   id: string;
@@ -31,216 +31,185 @@ interface Application {
   };
 }
 
-interface JobApplicationsListProps {
-  jobId: string;
-}
+const STATUS_STYLES = {
+  pending:  'text-[#b89a52] border-[#c9a96e]/40',
+  accepted: 'text-lux-black border-lux-black/30 bg-lux-black/5',
+  rejected: 'text-lux-subtle border-lux-border line-through',
+} as const;
 
-export default function JobApplicationsList({ jobId }: JobApplicationsListProps) {
-  const { toast } = useToast();
-  const [applications, setApplications] = useState<Application[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [updatingId, setUpdatingId] = useState<string | null>(null);
+const STATUS_LABELS = {
+  pending:  'Pending',
+  accepted: 'Accepted',
+  rejected: 'Rejected',
+} as const;
+
+export default function JobApplicationsList({ jobId }: { jobId: string }) {
+  const { toast }                                     = useToast();
+  const [applications, setApplications]               = useState<Application[]>([]);
+  const [isLoading,    setIsLoading]                  = useState(true);
+  const [updatingId,   setUpdatingId]                 = useState<string | null>(null);
 
   useEffect(() => {
-    fetchApplications();
+    let alive = true;
+    setIsLoading(true);
+    axios.get(`/api/job/${jobId}/applications`)
+      .then((r) => { if (alive && r.data?.success) setApplications(r.data.applications); })
+      .catch(() => { toast({ description: 'Failed to load applications', variant: 'destructive' }); })
+      .finally(() => { if (alive) setIsLoading(false); });
+    return () => { alive = false; };
   }, [jobId]);
 
-  const fetchApplications = async () => {
-    setIsLoading(true);
+  const updateStatus = async (appId: string, status: 'accepted' | 'rejected') => {
+    setUpdatingId(appId);
     try {
-      const res = await axios.get(`/api/job/${jobId}/applications`);
-      if (res.data?.success) {
-        setApplications(res.data.applications);
+      const r = await axios.patch(`/api/job/${jobId}/applications`, { applicationId: appId, status });
+      if (r.data?.success) {
+        setApplications((prev) => prev.map((a) => a.id === appId ? { ...a, status } : a));
+        toast({ description: `Application ${status}` });
       }
-    } catch (err: any) {
-      console.error('Failed to fetch applications:', err);
-      toast({
-        title: 'Error',
-        description: 'Failed to load applications',
-        variant: 'destructive'
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const updateApplicationStatus = async (
-    applicationId: string,
-    status: 'accepted' | 'rejected'
-  ) => {
-    setUpdatingId(applicationId);
-    try {
-      const res = await axios.patch(`/api/job/${jobId}/applications`, {
-        applicationId,
-        status
-      });
-
-      if (res.data?.success) {
-        setApplications(
-          applications.map((app) =>
-            app.id === applicationId ? { ...app, status } : app
-          )
-        );
-        toast({
-          title: 'Success',
-          description: `Application ${status}`
-        });
-      }
-    } catch (err: any) {
-      toast({
-        title: 'Error',
-        description: 'Failed to update application',
-        variant: 'destructive'
-      });
+    } catch {
+      toast({ description: 'Failed to update application', variant: 'destructive' });
     } finally {
       setUpdatingId(null);
     }
   };
 
   if (isLoading) {
-    return <div className='text-center py-8 text-[#9e9ea7]'>Loading applications...</div>;
+    return (
+      <div className='space-y-4'>
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div key={i} className='border border-lux-border p-6 space-y-3'>
+            <div className='flex items-center gap-3'>
+              <div className='h-9 w-9 rounded-full shimmer bg-lux-border' />
+              <div className='h-3.5 w-32 shimmer bg-lux-border' />
+            </div>
+            <div className='h-3 w-full shimmer bg-lux-border' />
+            <div className='h-3 w-4/5 shimmer bg-lux-border' />
+          </div>
+        ))}
+      </div>
+    );
   }
 
   if (applications.length === 0) {
     return (
-      <div className='text-center py-12'>
-        <p className='text-[#9e9ea7] text-lg'>No applications yet</p>
-        <p className='text-sm text-[#9e9ea7]'>Check back later for applicants</p>
+      <div className='py-16 text-center'>
+        <h3 className='font-display text-xl font-bold text-lux-black mb-2'>No applications yet</h3>
+        <p className='text-sm text-lux-mid'>Check back later for candidates.</p>
       </div>
     );
   }
 
   return (
-    <div className='space-y-6'>
-      <h2 className='text-2xl font-bold text-[#3d3d4e]'>Applications ({applications.length})</h2>
+    <div>
+      <h2 className='font-display text-2xl font-bold text-lux-black mb-2'>
+        Applications
+      </h2>
+      <p className='text-luxury-label tracking-luxury text-lux-muted mb-7'>
+        {applications.length} candidate{applications.length !== 1 ? 's' : ''}
+      </p>
 
       <div className='space-y-4'>
         {applications.map((app) => (
           <div
             key={app.id}
-            className='border border-[#e7e7e9] rounded-lg p-6 hover:shadow-md transition-shadow'
+            className='border border-lux-border p-6 transition-shadow duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)]'
           >
-            {/* Applicant Info */}
-            <div className='flex items-start justify-between mb-4'>
-              <Link
-                href={`/${app.user.firstName}${app.user.lastName}`}
-                className='flex items-center gap-3 hover:opacity-80'
-              >
-                <Avatar className='h-10 w-10'>
-                  <AvatarImage src={app.user.imageUrl || ''} />
-                  <AvatarFallback>
-                    {app.user.firstName?.charAt(0)}
-                    {app.user.lastName?.charAt(0)}
+            {/* Applicant row */}
+            <div className='flex items-start justify-between mb-5'>
+              <div className='flex items-center gap-3'>
+                <Avatar className='h-9 w-9 ring-1 ring-lux-border flex-shrink-0'>
+                  <AvatarImage src={app.user.imageUrl ?? ''} />
+                  <AvatarFallback className='text-[9px] bg-lux-hover text-lux-mid'>
+                    {app.user.firstName?.charAt(0)}{app.user.lastName?.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className='font-semibold text-[#3d3d4e]'>
+                  <p className='font-display font-bold text-lux-black text-[0.95rem] leading-tight'>
                     {app.user.firstName} {app.user.lastName}
                   </p>
-                  <p className='text-xs text-[#9e9ea7]'>
-                    {new Date(app.createdAt).toLocaleDateString()}
+                  <p className='text-luxury-label tracking-luxury text-lux-subtle mt-0.5'>
+                    {new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </p>
                 </div>
-              </Link>
-
-              {/* Status Badge */}
-              <div>
-                {app.status === 'pending' && (
-                  <span className='px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium'>
-                    Pending
-                  </span>
-                )}
-                {app.status === 'accepted' && (
-                  <span className='px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium'>
-                    Accepted
-                  </span>
-                )}
-                {app.status === 'rejected' && (
-                  <span className='px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium'>
-                    Rejected
-                  </span>
-                )}
               </div>
+
+              {/* Status badge */}
+              <span className={cn(
+                'text-luxury-label tracking-luxury border px-3 py-1',
+                STATUS_STYLES[app.status]
+              )}>
+                {STATUS_LABELS[app.status]}
+              </span>
             </div>
 
             {/* Message */}
-            <div className='mb-4'>
-              <p className='text-sm font-medium text-[#3d3d4e] mb-2'>Message:</p>
-              <p className='text-[#9e9ea7] text-sm whitespace-pre-wrap'>{app.message}</p>
+            <div className='mb-5'>
+              <p className='text-luxury-label tracking-luxury text-lux-muted mb-2'>Message</p>
+              <p className='text-sm text-lux-mid leading-relaxed whitespace-pre-wrap'>{app.message}</p>
             </div>
 
-            {/* Shared Work */}
+            {/* Shared work */}
             {app.work && (
-              <div className='mb-4 p-4 bg-[#f5f5f7] rounded-lg'>
-                <p className='text-sm font-medium text-[#3d3d4e] mb-3'>Their Project:</p>
-                <div className='flex gap-3'>
+              <div className='mb-5 border border-lux-border p-4'>
+                <p className='text-luxury-label tracking-luxury text-lux-muted mb-3'>Submitted Work</p>
+                <div className='flex gap-4 items-center'>
                   {app.work.image && (
-                    <div className='relative h-20 w-20 rounded overflow-hidden flex-shrink-0'>
-                      <Image
-                        src={app.work.image}
-                        alt={app.work.title}
-                        fill
-                        className='object-cover'
-                      />
+                    <div className='relative h-16 w-16 flex-shrink-0 overflow-hidden bg-[#f0ece5]'>
+                      <Image src={app.work.image} alt={app.work.title} fill className='object-cover' />
                     </div>
                   )}
-                  <div className='flex-1 min-w-0'>
-                    <p className='text-sm font-semibold text-[#3d3d4e] truncate'>
-                      {app.work.title}
-                    </p>
+                  <div className='min-w-0'>
+                    <p className='font-medium text-lux-black text-sm truncate'>{app.work.title}</p>
                     <Link
                       href={app.work.liveSiteUrl}
                       target='_blank'
                       rel='noopener noreferrer'
-                      className='text-xs text-blue-600 hover:underline flex items-center gap-1 mt-1'
+                      className='inline-flex items-center gap-1 text-luxury-label tracking-luxury text-[#c9a96e] hover:opacity-70 transition-opacity duration-200 mt-1'
                     >
-                      View Project <ExternalLink size={12} />
+                      View Project <ExternalLink size={10} />
                     </Link>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Portfolio Link */}
+            {/* Portfolio link */}
             {app.portfolioUrl && (
-              <div className='mb-4 p-4 bg-[#f5f5f7] rounded-lg'>
-                <p className='text-sm font-medium text-[#3d3d4e] mb-2'>Portfolio:</p>
+              <div className='mb-5 border border-lux-border p-4'>
+                <p className='text-luxury-label tracking-luxury text-lux-muted mb-2'>Portfolio</p>
                 <Link
                   href={app.portfolioUrl}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='text-sm text-blue-600 hover:underline flex items-center gap-2 break-all'
+                  className='inline-flex items-center gap-1.5 text-sm text-[#c9a96e] hover:opacity-70 transition-opacity duration-200 break-all'
                 >
-                  {app.portfolioUrl} <ExternalLink size={14} />
+                  {app.portfolioUrl} <ExternalLink size={12} className='flex-shrink-0' />
                 </Link>
               </div>
             )}
 
-            {/* Action Buttons */}
+            {/* Accept / Reject */}
             {app.status === 'pending' && (
-              <div className='flex gap-2'>
-                <Button
-                  size='sm'
-                  variant='outline'
-                  onClick={() => updateApplicationStatus(app.id, 'accepted')}
+              <div className='flex gap-2 pt-4 border-t border-lux-border'>
+                <button
+                  type='button'
+                  onClick={() => updateStatus(app.id, 'accepted')}
                   disabled={updatingId !== null}
-                  className='flex-1'
+                  className='flex-1 inline-flex items-center justify-center gap-2 bg-lux-black hover:bg-lux-dark text-white py-2.5 text-luxury-label tracking-luxury font-semibold transition-colors duration-300 disabled:opacity-60'
                 >
-                  {updatingId === app.id && <Loader2 className='mr-1 h-3 w-3 animate-spin' />}
-                  <Check size={16} className='mr-1' />
+                  {updatingId === app.id ? <Loader2 size={12} className='animate-spin' /> : <Check size={12} />}
                   Accept
-                </Button>
-                <Button
-                  size='sm'
-                  variant='outline'
-                  onClick={() => updateApplicationStatus(app.id, 'rejected')}
+                </button>
+                <button
+                  type='button'
+                  onClick={() => updateStatus(app.id, 'rejected')}
                   disabled={updatingId !== null}
-                  className='flex-1'
+                  className='flex-1 inline-flex items-center justify-center gap-2 border border-lux-border hover:border-lux-black/30 text-lux-mid hover:text-lux-black py-2.5 text-luxury-label tracking-luxury transition-all duration-300 disabled:opacity-60'
                 >
-                  {updatingId === app.id && <Loader2 className='mr-1 h-3 w-3 animate-spin' />}
-                  <X size={16} className='mr-1' />
-                  Reject
-                </Button>
+                  {updatingId === app.id ? <Loader2 size={12} className='animate-spin' /> : <X size={12} />}
+                  Decline
+                </button>
               </div>
             )}
           </div>

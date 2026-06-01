@@ -1,5 +1,4 @@
 import Link from 'next/link';
-
 import { cn } from '@/lib/utils';
 
 interface ProfileNavProps {
@@ -7,46 +6,32 @@ interface ProfileNavProps {
   activeNav: 'work' | 'jobs' | 'about';
 }
 
+const NAV_ITEMS = [
+  { key: 'work',  label: 'Work',  href: (u: string) => `/${u}`       },
+  { key: 'jobs',  label: 'Jobs',  href: (u: string) => `/${u}/jobs`  },
+  { key: 'about', label: 'About', href: (u: string) => `/${u}/about` },
+] as const;
+
 export default function ProfileNav({ username, activeNav }: ProfileNavProps) {
   return (
-    <ul className='w-full flex gap-2 py-8 border-b border-[#e7e7e9]'>
-      <li>
-        <Link
-          href={`/${username}`}
-          className={cn(
-            'h-9 px-4 inline-flex items-center text-sm font-semibold hover:text-[#6e6d7a] transition-colors duration-200 ease-in',
-            activeNav === 'work' &&
-              'rounded-full bg-[#f8f7f4] hover:bg-[#f5f3f0] hover:text-[#0d0c22]'
-          )}
-        >
-          Work
-        </Link>
-      </li>
-      <li>
-        <Link
-          href={`/${username}/jobs`}
-          className={cn(
-            'h-9 px-4 inline-flex items-center text-sm font-semibold hover:text-[#6e6d7a] transition-colors duration-200 ease-in',
-            activeNav === 'jobs' &&
-              'rounded-full bg-[#f8f7f4] hover:bg-[#f5f3f0] hover:text-[#0d0c22]'
-          )}
-        >
-          Jobs
-        </Link>
-      </li>
-
-      <li>
-        <Link
-          href={`/${username}/about`}
-          className={cn(
-            'h-9 px-4 inline-flex items-center text-sm font-semibold hover:text-[#6e6d7a] transition-colors duration-200 ease-in',
-            activeNav === 'about' &&
-              'rounded-full bg-[#f8f7f4] hover:bg-[#f5f3f0] hover:text-[#0d0c22]'
-          )}
-        >
-          About
-        </Link>
-      </li>
-    </ul>
+    <div className='w-full border-b border-lux-border'>
+      <ul className='flex gap-0'>
+        {NAV_ITEMS.map(({ key, label, href }) => (
+          <li key={key}>
+            <Link
+              href={href(username)}
+              className={cn(
+                'inline-flex items-center h-12 px-5 text-luxury-label tracking-luxury transition-all duration-200 border-b-2 -mb-px',
+                activeNav === key
+                  ? 'text-lux-black border-lux-black'
+                  : 'text-lux-muted hover:text-lux-mid border-transparent'
+              )}
+            >
+              {label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

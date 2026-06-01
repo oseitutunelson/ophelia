@@ -89,8 +89,7 @@ export default async function AboutPage({
   ]);
 
   return (
-    <section className='flex flex-col justify-start items-center lg:px-20 py-6 px-5'>
-      {/* serialization guard for client component */}
+    <section className='flex flex-col justify-start items-center lg:px-20 pt-[72px] px-5'>
       <ProfileHeader
         user={JSON.parse(JSON.stringify(user))}
         profile={JSON.parse(JSON.stringify(profile))}

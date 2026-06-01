@@ -7,211 +7,192 @@ import { Job } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
-import { MapPin, DollarSign, Briefcase, Calendar, Trash2, ArrowLeft } from 'lucide-react';
+import { MapPin, DollarSign, Briefcase, ArrowLeft, Trash2 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
 import JobApplicationForm from '@/components/job-application-form';
 import JobApplicationsList from '@/components/job-applications-list';
 import useGetProfile from '@/hooks/use-get-profile';
 
+function DetailSkeleton() {
+  return (
+    <div className='min-h-screen pt-[72px]'>
+      <div className='max-w-[800px] mx-auto px-6 py-12 space-y-6'>
+        <div className='h-4 w-24 shimmer bg-lux-border' />
+        <div className='w-full aspect-[16/6] shimmer bg-lux-border' />
+        <div className='h-8 w-2/3 shimmer bg-lux-border' />
+        <div className='h-4 w-full shimmer bg-lux-border' />
+        <div className='h-4 w-5/6 shimmer bg-lux-border' />
+      </div>
+    </div>
+  );
+}
+
 export default function JobDetailPage() {
-  const params = useParams();
-  const jobId = params.jobId as string;
+  const params                    = useParams();
+  const jobId                     = params.jobId as string;
   const { userId: currentUserId } = useAuth();
-  const [job, setJob] = useState<Job | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [job,        setJob]        = useState<Job | null>(null);
+  const [isLoading,  setIsLoading]  = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [posterData, setPosterData] = useState<any>(null);
 
   useEffect(() => {
-    const fetchJob = async () => {
-      try {
-        const res = await axios.get(`/api/job/${jobId}`);
-        if (res.data?.success && res.data?.job) {
-          setJob(res.data.job);
-        }
-      } catch (err) {
-        console.error('Failed to fetch job:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (jobId) {
-      fetchJob();
-    }
+    if (!jobId) return;
+    let alive = true;
+    setIsLoading(true);
+    axios.get(`/api/job/${jobId}`)
+      .then((r) => { if (alive && r.data?.success) setJob(r.data.job); })
+      .catch(() => {})
+      .finally(() => { if (alive) setIsLoading(false); });
+    return () => { alive = false; };
   }, [jobId]);
 
-  const { data: profileData } = useGetProfile({ userId: job?.userId || '' });
-
-  useEffect(() => {
-    if (profileData?.profile && profileData?.user) {
-      setPosterData(profileData);
-    }
-  }, [profileData]);
+  const { data: posterData } = useGetProfile({ userId: job?.userId ?? '' });
+  const isOwner = currentUserId === job?.userId;
 
   const handleDelete = async () => {
-    if (!job) return;
+    if (!job || isDeleting) return;
     setIsDeleting(true);
     try {
-      const res = await axios.delete(`/api/job/${job.id}`);
-      if (res.data?.success) {
-        window.location.href = '/jobs';
-      }
-    } catch (err) {
-      console.error('Failed to delete job:', err);
-    } finally {
+      const r = await axios.delete(`/api/job/${job.id}`);
+      if (r.data?.success) window.location.href = '/jobs';
+    } catch { /* noop */ } finally {
       setIsDeleting(false);
     }
   };
 
-  const isOwner = currentUserId === job?.userId;
-
-  if (isLoading) {
-    return (
-      <div className='min-h-screen bg-white'>
-        <div className='max-w-4xl mx-auto px-6 lg:px-10 py-12'>
-          <Skeleton className='h-12 w-32 mb-8' />
-          <Skeleton className='h-96 w-full mb-8 rounded-lg' />
-          <Skeleton className='h-8 w-1/2 mb-4' />
-          <Skeleton className='h-4 w-full mb-2' />
-          <Skeleton className='h-4 w-full' />
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <DetailSkeleton />;
 
   if (!job) {
     return (
-      <div className='min-h-screen bg-white flex items-center justify-center'>
+      <div className='min-h-screen flex items-center justify-center pt-[72px]'>
         <div className='text-center'>
-          <h2 className='text-2xl font-bold text-[#3d3d4e] mb-2'>Job Not Found</h2>
-          <p className='text-[#9e9ea7] mb-6'>The job you're looking for doesn't exist.</p>
-          <Button asChild>
-            <Link href='/jobs'>Back to Jobs</Link>
-          </Button>
+          <h2 className='font-display text-3xl font-bold text-lux-black mb-3'>Job Not Found</h2>
+          <p className='text-lux-mid mb-8'>This position no longer exists or has been removed.</p>
+          <Link
+            href='/jobs'
+            className='text-luxury-label tracking-luxury text-lux-mid hover:text-lux-black border border-lux-border hover:border-lux-black/30 px-6 py-3 transition-all duration-300'
+          >
+            Back to Jobs
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className='min-h-screen bg-white'>
-      <div className='max-w-4xl mx-auto px-6 lg:px-10 py-12'>
-        <Link href='/jobs' className='flex items-center gap-2 text-[#3d3d4e] font-semibold mb-8 hover:opacity-80'>
-          <ArrowLeft size={20} />
+    <div className='min-h-screen pt-[72px]'>
+
+      {/* ── Cover image ─────────────────────────────────────── */}
+      {job.image && (
+        <div className='relative w-full aspect-[21/6] overflow-hidden bg-[#f0ece5]'>
+          <Image src={job.image} alt={job.title} fill className='object-cover' />
+          <div className='absolute inset-0 bg-gradient-to-t from-lux-black/30 to-transparent' />
+        </div>
+      )}
+
+      <div className='max-w-[800px] mx-auto px-6 py-10'>
+
+        {/* Back */}
+        <Link
+          href='/jobs'
+          className='inline-flex items-center gap-2 text-luxury-label tracking-luxury text-lux-muted hover:text-lux-black transition-colors duration-300 mb-8'
+        >
+          <ArrowLeft size={13} />
           Back to Jobs
         </Link>
 
-        {job.image && (
-          <div className='relative h-96 rounded-lg overflow-hidden mb-8'>
-            <Image
-              src={job.image}
-              alt={job.title}
-              fill
-              className='object-cover'
-            />
-          </div>
-        )}
+        {/* Header */}
+        <div className='flex items-start justify-between mb-2'>
+          <span className='text-luxury-label tracking-luxury text-[#c9a96e] border border-[#c9a96e]/30 px-3 py-1'>
+            {job.category.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+          </span>
 
-        <div className='flex justify-between items-start mb-8'>
-          <div>
-            <h1 className='text-4xl font-bold text-[#3d3d4e] mb-4'>{job.title}</h1>
-            <span className='inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-4'>
-              {job.category}
-            </span>
-          </div>
           {isOwner && (
             <button
+              type='button'
               onClick={handleDelete}
               disabled={isDeleting}
-              className='p-3 hover:bg-red-50 rounded-lg transition-colors'
               aria-label='Delete job'
+              className='p-1.5 text-lux-subtle hover:text-red-500 transition-colors duration-200'
             >
-              <Trash2 size={20} className='text-red-500' />
+              <Trash2 size={16} />
             </button>
           )}
         </div>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 p-6 bg-[#f5f5f7] rounded-lg'>
-          <div className='flex items-center gap-3'>
-            <Briefcase size={20} className='text-[#9e9ea7]' />
-            <div>
-              <p className='text-xs text-[#9e9ea7] uppercase tracking-wide'>Job Type</p>
-              <p className='text-lg font-semibold text-[#3d3d4e]'>{job.jobType}</p>
-            </div>
-          </div>
-          {job.location && (
-            <div className='flex items-center gap-3'>
-              <MapPin size={20} className='text-[#9e9ea7]' />
-              <div>
-                <p className='text-xs text-[#9e9ea7] uppercase tracking-wide'>Location</p>
-                <p className='text-lg font-semibold text-[#3d3d4e]'>{job.location}</p>
+        <h1 className='font-display text-4xl md:text-[3rem] font-bold text-lux-black leading-tight mt-4 mb-8'>
+          {job.title}
+        </h1>
+
+        {/* Meta panel */}
+        <div className='grid grid-cols-2 sm:grid-cols-4 gap-0 border border-lux-border mb-10'>
+          {[
+            { icon: <Briefcase size={14} />, label: 'Job Type',   value: job.jobType   },
+            { icon: <MapPin size={14} />,    label: 'Location',   value: job.location  },
+            { icon: <DollarSign size={14} />,label: 'Salary',     value: job.salary    },
+            { icon: null,                    label: 'Experience', value: job.experience },
+          ].filter((m) => m.value).map((meta, i, arr) => (
+            <div
+              key={meta.label}
+              className={`p-5 ${i < arr.length - 1 ? 'border-r border-lux-border' : ''}`}
+            >
+              <div className='flex items-center gap-1.5 text-luxury-label tracking-luxury text-lux-muted mb-1.5'>
+                {meta.icon}
+                {meta.label}
               </div>
+              <p className='font-display font-bold text-lux-black text-lg leading-tight'>
+                {meta.value}
+              </p>
             </div>
-          )}
-          {job.salary && (
-            <div className='flex items-center gap-3'>
-              <DollarSign size={20} className='text-[#9e9ea7]' />
-              <div>
-                <p className='text-xs text-[#9e9ea7] uppercase tracking-wide'>Salary</p>
-                <p className='text-lg font-semibold text-[#3d3d4e]'>{job.salary}</p>
-              </div>
-            </div>
-          )}
-          {job.experience && (
-            <div className='flex items-center gap-3'>
-              <div>
-                <p className='text-xs text-[#9e9ea7] uppercase tracking-wide'>Experience</p>
-                <p className='text-lg font-semibold text-[#3d3d4e]'>{job.experience}</p>
-              </div>
-            </div>
-          )}
+          ))}
         </div>
 
-        <div className='mb-8'>
-          <h2 className='text-2xl font-bold text-[#3d3d4e] mb-4'>Job Description</h2>
-          <p className='text-[#3d3d4e] whitespace-pre-wrap leading-relaxed'>{job.description}</p>
+        {/* Description */}
+        <div className='mb-12'>
+          <h2 className='font-display text-2xl font-bold text-lux-black mb-5'>
+            Job Description
+          </h2>
+          <div className='divider-gold mb-6' />
+          <p className='text-lux-mid leading-relaxed whitespace-pre-wrap text-[0.95rem]'>
+            {job.description}
+          </p>
         </div>
 
-        <div className='border-t border-[#e7e7e9] pt-8'>
-          <h3 className='text-lg font-semibold text-[#3d3d4e] mb-4'>Posted by</h3>
-          {posterData?.profile && posterData?.user && (
+        {/* Posted by */}
+        {posterData?.profile && posterData?.user && (
+          <div className='mb-12'>
+            <p className='text-luxury-label tracking-luxury text-lux-muted mb-4'>Posted by</p>
             <Link
               href={`/${posterData.profile.username}`}
-              className='flex items-center gap-4 p-4 border border-[#e7e7e9] rounded-lg hover:shadow-md transition-shadow'
+              className='flex items-center gap-4 p-5 border border-lux-border hover:border-lux-black/20 transition-all duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)]'
             >
-              <Avatar className='h-16 w-16'>
+              <Avatar className='h-12 w-12 ring-1 ring-lux-border flex-shrink-0'>
                 <AvatarImage src={posterData.user.imageUrl} alt='avatar' />
-                <AvatarFallback>
-                  {posterData.user.firstName?.charAt(0)}
-                  {posterData.user.lastName?.charAt(0)}
+                <AvatarFallback className='bg-lux-hover text-lux-mid font-semibold'>
+                  {posterData.user.firstName?.charAt(0)}{posterData.user.lastName?.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className='font-semibold text-[#3d3d4e]'>
+                <p className='font-display font-bold text-lux-black'>
                   {posterData.user.firstName} {posterData.user.lastName}
                 </p>
-                <p className='text-sm text-[#9e9ea7]'>@{posterData.profile.username}</p>
+                <p className='text-luxury-label tracking-luxury text-lux-muted mt-0.5'>
+                  @{posterData.profile.username}
+                </p>
                 {posterData.profile.bio && (
-                  <p className='text-sm text-[#3d3d4e] mt-1'>{posterData.profile.bio}</p>
+                  <p className='text-sm text-lux-mid mt-1.5 line-clamp-1'>{posterData.profile.bio}</p>
                 )}
               </div>
             </Link>
-          )}
-        </div>
-
-        <div className='border-t border-[#e7e7e9] pt-8 mt-8'>
-          {!isOwner && <JobApplicationForm jobId={jobId} />}
-        </div>
-
-        {isOwner && (
-          <div className='border-t border-[#e7e7e9] pt-8 mt-8'>
-            <JobApplicationsList jobId={jobId} />
           </div>
         )}
+
+        <div className='divider-gold mb-10' />
+
+        {/* Apply / Applications */}
+        {!isOwner && <JobApplicationForm jobId={jobId} />}
+        {isOwner  && <JobApplicationsList jobId={jobId} />}
       </div>
     </div>
   );
