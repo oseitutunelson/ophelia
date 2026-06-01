@@ -11,12 +11,14 @@ import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import useFollow from '@/hooks/use-follow';
 import MessageModal from '@/components/modals/message-modal';
+import ProBadge from '@/components/pro-badge';
 
 export interface ClientUser {
   id: string;
   firstName?: string | null;
   lastName?: string | null;
   imageUrl?: string | null;
+  publicMetadata?: Record<string, unknown>;
 }
 
 interface ProfileHeaderProps {
@@ -24,6 +26,9 @@ interface ProfileHeaderProps {
   profile: Profile;
   works: Work[];
 }
+
+const isProUser    = (u: ClientUser) => !!(u.publicMetadata?.isPro || u.publicMetadata?.isAgencyPro);
+const isAgencyUser = (u: ClientUser) => !!u.publicMetadata?.isAgencyPro;
 
 export default function ProfileHeader({ user, profile, works }: ProfileHeaderProps) {
   const { userId: currentUserId } = useAuth();
@@ -129,8 +134,11 @@ export default function ProfileHeader({ user, profile, works }: ProfileHeaderPro
               <p className='text-luxury-label tracking-luxury text-[#c9a96e] mb-1'>
                 @{profile.username}
               </p>
-              <h1 className='font-display text-3xl font-bold text-lux-black leading-tight'>
+              <h1 className='font-display text-3xl font-bold text-lux-black leading-tight flex items-center gap-2'>
                 {user.firstName} {user.lastName}
+                {isProUser(user) && (
+                  <ProBadge isAgency={isAgencyUser(user)} size='md' />
+                )}
               </h1>
             </div>
           </div>
@@ -161,8 +169,11 @@ export default function ProfileHeader({ user, profile, works }: ProfileHeaderPro
                 <p className='text-luxury-label tracking-luxury text-[#c9a96e] mb-0.5'>
                   @{profile.username}
                 </p>
-                <h1 className='font-display text-2xl font-bold text-lux-black leading-tight'>
+                <h1 className='font-display text-2xl font-bold text-lux-black leading-tight flex items-center gap-2'>
                   {user.firstName} {user.lastName}
+                  {isProUser(profile) && (
+                    <ProBadge isAgency={isAgencyUser(profile)} size='md' />
+                  )}
                 </h1>
               </div>
             </div>

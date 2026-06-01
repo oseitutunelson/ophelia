@@ -99,6 +99,13 @@ export default function ProfileMenu() {
                 Settings
               </Link>
               <Separator className='my-3' />
+              <Link
+                href='/go-pro'
+                className='text-[15px] py-2 font-semibold text-[#c9a96e] hover:text-[#b8963d] transition-colors ease-in-out duration-200'
+              >
+                ✦ Go Pro
+              </Link>
+              <Separator className='my-3' />
               <SignOutButton>
                 <button className='text-[15px] pt-2 text-left hover:opacity-80 transition-opacity ease-in-out duration-200'>
                   Sign out
@@ -186,6 +193,13 @@ export default function ProfileMenu() {
                 className='text-[15px] py-2 hover:opacity-80 transition-opacity ease-in-out duration-200'
               >
                 Settings
+              </Link>
+              <Separator className='my-3' />
+              <Link
+                href='/go-pro'
+                className='text-[15px] py-2 font-semibold text-[#c9a96e] hover:text-[#b8963d] transition-colors ease-in-out duration-200'
+              >
+                ✦ Go Pro
               </Link>
               <Separator className='my-3' />
               {isLoading && (

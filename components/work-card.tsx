@@ -12,6 +12,7 @@ import { Icons } from '@/components/icons/Icons';
 import useGetProfile from '@/hooks/use-get-profile';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import ProBadge from '@/components/pro-badge';
 
 interface WorkCardProps {
   work: Work;
@@ -139,8 +140,11 @@ export default function WorkCard({
                   {data.user.firstName?.charAt(0)}{data.user.lastName?.charAt(0)}
                 </AvatarFallback>
               </Avatar>
-              <p className='text-xs text-lux-mid w-28 truncate'>
+              <p className='text-xs text-lux-mid w-28 truncate flex items-center gap-1'>
                 {data.user.firstName} {data.user.lastName}
+                {(data.user as any).publicMetadata?.isPro && (
+                  <ProBadge isAgency={!!(data.user as any).publicMetadata?.isAgencyPro} />
+                )}
               </p>
             </Link>
           )}

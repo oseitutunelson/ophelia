@@ -17,6 +17,8 @@ const NAV_LINKS = [
   { href: '/jobs',        text: 'Jobs' }
 ];
 
+const NAV_PRO_HREF = '/go-pro';
+
 export default function Navbar() {
   const { userId } = useAuth();
   const navRef = useRef<HTMLElement>(null);
@@ -100,6 +102,12 @@ export default function Navbar() {
           <>
             <SearchInput />
             <Link
+              href={NAV_PRO_HREF}
+              className='hidden lg:flex items-center text-luxury-label tracking-luxury text-[#c9a96e] hover:text-[#b8963d] transition-colors duration-300 gap-1.5'
+            >
+              ✦ Go Pro
+            </Link>
+            <Link
               href='/upload-new'
               className='hidden xl:flex items-center text-luxury-label tracking-luxury text-white bg-lux-black hover:bg-lux-dark transition-colors duration-300 px-5 py-2.5 font-semibold'
             >
@@ -110,6 +118,12 @@ export default function Navbar() {
         ) : (
           <>
             <SearchInput />
+            <Link
+              href={NAV_PRO_HREF}
+              className='hidden lg:flex items-center text-luxury-label tracking-luxury text-[#c9a96e] hover:text-[#b8963d] transition-colors duration-300'
+            >
+              ✦ Go Pro
+            </Link>
             <Link
               href='/sign-in'
               className='hidden lg:flex text-luxury-label tracking-luxury text-lux-mid hover:text-lux-black transition-colors duration-300'

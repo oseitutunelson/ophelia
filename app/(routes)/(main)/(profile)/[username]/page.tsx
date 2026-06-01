@@ -3,6 +3,8 @@ import type { User } from '@clerk/nextjs/server';
 import { Metadata, ResolvingMetadata } from 'next';
 import { clerkClient, currentUser } from '@clerk/nextjs';
 
+export const dynamic = 'force-dynamic';
+
 import db from '@/lib/db';
 import WorkList from '@/components/work-list';
 import ProfileNav from '@/components/profile-nav';
@@ -92,10 +94,11 @@ export default async function ProfilePage({
 
   // make sure we only pass plain data to the client component
   const headerUser = {
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    imageUrl: user.imageUrl
+    id:             user.id,
+    firstName:      user.firstName,
+    lastName:       user.lastName,
+    imageUrl:       user.imageUrl,
+    publicMetadata: user.publicMetadata
   };
 
   const headerProfile = JSON.parse(JSON.stringify(profile));
