@@ -2,14 +2,13 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { BookmarkIcon, MessageCircleIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { BookmarkIcon, MessageCircleIcon, ArrowRight } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
-import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface Work {
   id: string;
@@ -36,194 +35,168 @@ export default function TalentCard({
   bio,
   works,
   profilePicture,
-  githubUrl,
-  linkedinUrl
 }: TalentCardProps) {
-  const { toast } = useToast();
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isBookmarking, setIsBookmarking] = useState(false);
+  const { toast }                                 = useToast();
+  const [isBookmarked,   setIsBookmarked]         = useState(false);
+  const [isBookmarking,  setIsBookmarking]        = useState(false);
+  const [checkingStatus, setCheckingStatus]       = useState(true);
 
   useEffect(() => {
-    const checkBookmark = async () => {
-      try {
-        const res = await axios.get(`/api/profile-bookmarks/${userId}`);
-        if (res.data?.success) {
-          setIsBookmarked(res.data.isBookmarked);
-        }
-      } catch (err) {
-        console.error('Failed to check bookmark:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkBookmark();
+    let alive = true;
+    axios.get(`/api/profile-bookmarks/${userId}`)
+      .then((r) => { if (alive && r.data?.success) setIsBookmarked(!!r.data.isBookmarked); })
+      .catch(() => {})
+      .finally(() => { if (alive) setCheckingStatus(false); });
+    return () => { alive = false; };
   }, [userId]);
 
   const handleBookmark = async () => {
+    if (isBookmarking) return;
+    setIsBookmarking(true);
     try {
-      setIsBookmarking(true);
-
       if (isBookmarked) {
-        // Remove bookmark
-        const res = await axios.delete(`/api/profile-bookmarks/${userId}`);
-        if (res.data?.success) {
+        const r = await axios.delete(`/api/profile-bookmarks/${userId}`);
+        if (r.data?.success) {
           setIsBookmarked(false);
-          toast({
-            description: 'Removed from bookmarks'
-          });
+          toast({ description: 'Removed from saved designers' });
         }
       } else {
-        // Add bookmark
-        const res = await axios.post('/api/profile-bookmarks', {
-          talentId: userId
-        });
-        if (res.data?.success) {
+        const r = await axios.post('/api/profile-bookmarks', { talentId: userId });
+        if (r.data?.success) {
           setIsBookmarked(true);
-          toast({
-            description: 'Added to bookmarks'
-          });
+          toast({ description: 'Designer saved' });
         }
       }
     } catch (err: any) {
-      console.error('Failed to toggle bookmark:', err);
-      toast({
-        description:
-          err.response?.data?.error || 'Something went wrong',
-        variant: 'destructive'
-      });
+      toast({ description: err.response?.data?.error || 'Something went wrong', variant: 'destructive' });
     } finally {
       setIsBookmarking(false);
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className='border border-[#e7e7e9] rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300'>
-        <Skeleton className='h-48 w-full' />
-        <div className='p-4 space-y-3'>
-          <Skeleton className='h-4 w-1/2' />
-          <Skeleton className='h-3 w-full' />
-          <div className='grid grid-cols-3 gap-2'>
-            <Skeleton className='h-16' />
-            <Skeleton className='h-16' />
-            <Skeleton className='h-16' />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const featuredWork = works[0];
 
   return (
-    <div className='border border-[#e7e7e9] rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col h-full'>
-      {/* Featured Work Image */}
-      {works.length > 0 && (
-        <div className='relative h-56 w-full overflow-hidden bg-gray-100'>
+    <div className='talent-card-item group flex flex-col border border-lux-border bg-white transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_20px_56px_rgba(0,0,0,0.10),0_6px_16px_rgba(0,0,0,0.06)] hover:-translate-y-1'>
+
+      {/* ── Featured work image ──────────────────────────────── */}
+      <Link href={`/${username}`} className='relative block w-full aspect-[4/3] overflow-hidden bg-[#f0ece5]'>
+        {featuredWork ? (
           <Image
-            src={works[0].image}
-            alt={works[0].title}
+            src={featuredWork.image}
+            alt={featuredWork.title}
             fill
-            className='object-cover hover:scale-105 transition-transform duration-300'
+            className='object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]'
           />
-        </div>
-      )}
+        ) : (
+          <div className='absolute inset-0 bg-gradient-to-br from-[#f0ece5] to-[#e5dfd6] flex items-center justify-center'>
+            <span className='text-luxury-label tracking-luxury text-lux-subtle'>No works yet</span>
+          </div>
+        )}
 
-      {/* Card Content */}
-      <div className='p-4 flex-1 flex flex-col'>
-        {/* Profile Info */}
-        <div className='flex items-start justify-between mb-4'>
-          <Link
-            href={`/profile/${username}`}
-            className='flex items-center gap-3 hover:opacity-80 transition-opacity flex-1'
-          >
-            <Avatar className='h-12 w-12'>
-              {profilePicture && (
-                <AvatarImage src={profilePicture} alt={username} />
-              )}
-              <AvatarFallback className='bg-gradient-to-br from-blue-500 to-purple-500 text-white font-semibold'>
-                {username.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className='flex-1 min-w-0'>
-              <h3 className='font-semibold text-sm truncate'>{username}</h3>
-              <p className='text-xs text-[#9e9ea7]'>Verified Designer</p>
-            </div>
-          </Link>
+        {/* category label on featured work */}
+        {featuredWork && (
+          <div className='absolute bottom-3 left-3'>
+            <span className='inline-block bg-white/90 backdrop-blur-sm text-lux-black text-[10px] tracking-[0.14em] uppercase font-semibold px-2.5 py-1'>
+              {featuredWork.category}
+            </span>
+          </div>
+        )}
 
-          <button
-            onClick={handleBookmark}
-            disabled={isBookmarking}
-            className={`flex-shrink-0 ml-2 transition-colors ${
-              isBookmarked
-                ? 'text-yellow-500'
-                : 'text-[#9e9ea7] hover:text-yellow-500'
-            }`}
-          >
-            <BookmarkIcon
-              className='w-5 h-5'
-              fill={isBookmarked ? 'currentColor' : 'none'}
-            />
-          </button>
-        </div>
+        {/* bookmark button */}
+        <button
+          type='button'
+          aria-label='Save designer'
+          onClick={(e) => { e.preventDefault(); handleBookmark(); }}
+          disabled={isBookmarking || checkingStatus}
+          className={cn(
+            'absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center border border-white/20 transition-all duration-200 shadow-sm',
+            'opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0'
+          )}
+        >
+          <BookmarkIcon
+            size={12}
+            className={isBookmarked ? 'text-gold fill-gold' : 'text-lux-black'}
+          />
+        </button>
+      </Link>
+
+      {/* ── Card body ────────────────────────────────────────── */}
+      <div className='flex flex-col flex-1 p-5'>
+
+        {/* Profile row */}
+        <Link
+          href={`/${username}`}
+          className='flex items-center gap-3 mb-4 hover:opacity-75 transition-opacity duration-200'
+        >
+          <Avatar className='h-10 w-10 ring-1 ring-lux-border flex-shrink-0'>
+            {profilePicture && <AvatarImage src={profilePicture} alt={username} />}
+            <AvatarFallback className='bg-[#f0ece5] text-lux-black font-semibold text-sm'>
+              {username.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className='min-w-0'>
+            <p className='font-display font-bold text-lux-black text-[1rem] leading-tight truncate'>
+              {username}
+            </p>
+            <p className='text-luxury-label tracking-luxury text-[#c9a96e] mt-0.5'>
+              Verified Designer
+            </p>
+          </div>
+        </Link>
 
         {/* Bio */}
         {bio && (
-          <p className='text-sm text-[#6d6d78] mb-3 line-clamp-2 flex-shrink-0'>
+          <p className='text-sm text-lux-mid leading-relaxed line-clamp-2 mb-4'>
             {bio}
           </p>
         )}
 
-        {/* Portfolio Works */}
-        {works.length > 0 && (
-          <div className='mb-4 flex-1'>
-            <p className='text-xs font-semibold text-[#3d3d4e] mb-2'>
-              Featured Works ({works.length})
+        {/* Mini work grid */}
+        {works.length > 1 && (
+          <div className='mb-5'>
+            <p className='text-luxury-label tracking-luxury text-lux-muted mb-2'>
+              Portfolio · {works.length} works
             </p>
-            <div className='grid grid-cols-3 gap-2'>
-              {works.map(work => (
+            <div className='grid grid-cols-3 gap-1.5'>
+              {works.slice(0, 3).map((work) => (
                 <Link
                   key={work.id}
                   href={`/work/${work.id}`}
-                  className='relative group aspect-square rounded overflow-hidden bg-gray-100'
+                  className='relative group/thumb aspect-square overflow-hidden bg-[#f0ece5]'
                 >
                   <Image
                     src={work.image}
                     alt={work.title}
                     fill
-                    className='object-cover group-hover:scale-110 transition-transform duration-300'
+                    className='object-cover transition-transform duration-500 group-hover/thumb:scale-110'
                   />
-                  <div className='absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center'>
-                    <span className='text-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity'>
-                      {work.category}
-                    </span>
-                  </div>
+                  <div className='absolute inset-0 bg-lux-black/0 group-hover/thumb:bg-lux-black/20 transition-colors duration-300' />
                 </Link>
               ))}
             </div>
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className='flex gap-2 mt-auto'>
-          <Button
-            variant='outline'
-            size='sm'
-            className='flex-1 rounded-full border-[#e7e7e9] hover:bg-transparent'
-            asChild
+        {/* Spacer */}
+        <div className='flex-1' />
+
+        {/* CTA buttons */}
+        <div className='flex gap-2 pt-4 border-t border-lux-border'>
+          <Link
+            href={`/messages?user=${userId}`}
+            className='flex-1 inline-flex items-center justify-center gap-2 border border-lux-border hover:border-lux-black/30 text-lux-mid hover:text-lux-black px-4 py-2.5 text-luxury-label tracking-luxury transition-all duration-300'
           >
-            <Link href={`/messages?user=${userId}`}>
-              <MessageCircleIcon className='w-4 h-4 mr-2' />
-              Contact
-            </Link>
-          </Button>
-          <Button
-            size='sm'
-            className='flex-1 rounded-full'
-            asChild
+            <MessageCircleIcon size={12} />
+            Contact
+          </Link>
+          <Link
+            href={`/${username}`}
+            className='flex-1 inline-flex items-center justify-center gap-2 bg-lux-black hover:bg-lux-dark text-white px-4 py-2.5 text-luxury-label tracking-luxury font-semibold transition-colors duration-300'
           >
-            <Link href={`/${username}`}>View Profile</Link>
-          </Button>
+            View Profile
+            <ArrowRight size={11} className='transition-transform duration-300 group-hover:translate-x-0.5' />
+          </Link>
         </div>
       </div>
     </div>

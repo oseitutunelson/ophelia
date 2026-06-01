@@ -200,7 +200,7 @@ export default function FashionHero() {
           DRESS — main campaign centrepiece
       ══════════════════════════════════════════════════════════ */}
       <div
-        className='dress-3d relative z-10 flex flex-col items-center mt-52'
+        className='dress-3d relative z-10 flex flex-col items-center mt-[37px]'
         style={{ transformStyle: 'preserve-3d' }}
       >
         <div className='dress-wrap relative'>

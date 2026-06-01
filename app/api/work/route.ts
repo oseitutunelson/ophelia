@@ -103,42 +103,46 @@ export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
 
-    const offset = searchParams.get('offset');
-    const search = searchParams.get('search');
+    const offset   = searchParams.get('offset');
+    const search   = searchParams.get('search');
     const category = searchParams.get('category');
-    const userId = searchParams.get('userId');
+    const userId   = searchParams.get('userId');
+    const sort     = searchParams.get('sort'); // 'latest' | 'popular' | 'trending'
 
-    const titleContains = typeof search === 'string' ? search : undefined;
-    const ownerUserId = typeof userId === 'string' ? userId : undefined;
-    // accept any category string from the client so category filtering works for all categories
+    const offsetNum      = typeof offset === 'string' ? parseInt(offset) : 0;
+    const titleContains  = typeof search   === 'string' ? search   : undefined;
+    const ownerUserId    = typeof userId   === 'string' ? userId   : undefined;
     const categoryFilter = typeof category === 'string' ? decodeURIComponent(category) : undefined;
 
-    console.log('Work API GET params:', { offset, search, category, userId, categoryFilter });
+    const where = {
+      userId: ownerUserId,
+      title: { contains: titleContains, mode: 'insensitive' as const },
+      ...(categoryFilter && { category: { equals: categoryFilter, mode: 'insensitive' as const } }),
+      ...(sort === 'trending' && {
+        createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+      })
+    };
 
-    console.log('Work API GET params:', { offset, search, category, userId, categoryFilter });
+    if (sort === 'popular') {
+      const worksWithCounts = await db.work.findMany({
+        skip: offsetNum,
+        take: 24,
+        where,
+        include: { _count: { select: { likes: true } } }
+      });
+      const sorted = worksWithCounts
+        .sort((a, b) => b._count.likes - a._count.likes)
+        .slice(0, 12);
+      const works = sorted.map(({ _count: _c, ...w }) => w);
+      return NextResponse.json(works);
+    }
 
     const works = await db.work.findMany({
-      skip: typeof offset === 'string' ? parseInt(offset) : 0,
+      skip: offsetNum,
       take: 12,
-      where: {
-        userId: ownerUserId,
-        title: {
-          contains: titleContains,
-          mode: 'insensitive'
-        },
-        category: categoryFilter ? {
-          equals: categoryFilter,
-          mode: 'insensitive'
-        } : undefined
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
+      where,
+      orderBy: { createdAt: 'desc' }
     });
-
-    console.log(`Found ${works.length} works for category: ${categoryFilter}`);
-
-    console.log(`Found ${works.length} works for category: ${categoryFilter}`);
 
     return NextResponse.json(works);
   } catch (error) {

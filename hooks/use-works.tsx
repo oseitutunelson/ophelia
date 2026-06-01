@@ -7,13 +7,15 @@ interface WorkParams {
   search?: string | null;
   category?: string | null;
   userId?: string;
+  sort?: string | null;
 }
 
 export default function useWorks({
   offset,
   search,
   category,
-  userId
+  userId,
+  sort
 }: WorkParams) {
   let params = '';
 
@@ -25,16 +27,16 @@ export default function useWorks({
     params += params === '' ? '?search=' + search : '&search=' + search;
   }
 
-  if (
-    category !== undefined &&
-    category !== null &&
-    typeof category === 'string'
-  ) {
+  if (category !== undefined && category !== null && typeof category === 'string') {
     params += params === '' ? '?category=' + category : '&category=' + category;
   }
 
   if (userId !== undefined && typeof userId === 'string') {
     params += params === '' ? '?userId=' + userId : '&userId=' + userId;
+  }
+
+  if (sort !== undefined && sort !== null && typeof sort === 'string') {
+    params += params === '' ? '?sort=' + sort : '&sort=' + sort;
   }
 
   const { data, error, isLoading } = useSWR(`/api/work${params}`, fetcher);

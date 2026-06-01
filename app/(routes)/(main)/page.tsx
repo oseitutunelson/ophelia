@@ -4,10 +4,11 @@ import db from '@/lib/db';
 import WorkList from '@/components/work-list';
 import FilterNav from '@/components/filter-nav';
 import SearchHeader from '@/components/search-header';
+import SearchResultsGrid from '@/components/search-results-grid';
 import FashionHero from '@/components/fashion-hero';
 
 type Props = {
-  searchParams: { search?: string; category?: string };
+  searchParams: { search?: string; category?: string; sort?: string };
 };
 
 export async function generateMetadata(
@@ -25,49 +26,80 @@ export async function generateMetadata(
 }
 
 interface HomePageProps {
-  searchParams: { search?: string; category?: string };
+  searchParams: { search?: string; category?: string; sort?: string };
 }
 
 export default async function HomePage({ searchParams }: HomePageProps) {
-  const { search, category } = searchParams;
+  const { search, category, sort } = searchParams;
 
   const titleContains  = typeof search   === 'string' ? search   : undefined;
   const categoryFilter = typeof category === 'string' ? decodeURIComponent(category) : undefined;
-  const isFiltered = titleContains !== undefined || categoryFilter !== undefined;
+  const isFiltered     = titleContains !== undefined || categoryFilter !== undefined;
 
-  const [works, totalWorks] = await db.$transaction([
-    db.work.findMany({
-      take: 12,
-      where: {
-        title: { contains: titleContains, mode: 'insensitive' },
-        ...(categoryFilter && { category: { equals: categoryFilter, mode: 'insensitive' } })
-      },
-      orderBy: { createdAt: 'desc' }
-    }),
-    db.work.count({
-      where: {
-        title: { contains: titleContains, mode: 'insensitive' },
-        ...(categoryFilter && { category: { equals: categoryFilter, mode: 'insensitive' } })
-      }
+  const where = {
+    title: { contains: titleContains, mode: 'insensitive' as const },
+    ...(categoryFilter && { category: { equals: categoryFilter, mode: 'insensitive' as const } }),
+    ...(sort === 'trending' && {
+      createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
     })
-  ]);
+  };
+
+  let works;
+  let totalWorks: number;
+
+  if (sort === 'popular') {
+    const [worksWithCounts, count] = await db.$transaction([
+      db.work.findMany({
+        take: 24,
+        where,
+        include: { _count: { select: { likes: true } } }
+      }),
+      db.work.count({ where })
+    ]);
+    works = worksWithCounts
+      .sort((a, b) => b._count.likes - a._count.likes)
+      .slice(0, 12)
+      .map(({ _count: _c, ...w }) => w);
+    totalWorks = count;
+  } else {
+    [works, totalWorks] = await db.$transaction([
+      db.work.findMany({
+        take: 12,
+        where,
+        orderBy: { createdAt: 'desc' }
+      }),
+      db.work.count({ where })
+    ]);
+  }
 
   const pageCount = Math.ceil(totalWorks / 12);
 
   return (
     <>
-      {/* Cocktail-style fashion hero — only on unfiltered home */}
+      {/* Fashion hero — only on unfiltered home */}
       {!isFiltered && <FashionHero />}
 
-      {/* Search results header */}
+      {/* Search header — only when a search/category filter is active */}
       <SearchHeader search={titleContains} />
 
-      {/* Works section */}
-      <section className='flex flex-col items-center lg:px-16 xl:px-20 py-8 px-5'>
-        {isFiltered && <div className='h-4' />}
-        <FilterNav />
-        <WorkList initialData={works} pageCount={pageCount} />
-      </section>
+      {isFiltered ? (
+        /* ── Dribbble-style masonry search results ── */
+        <section className='px-5 lg:px-16 xl:px-20 py-8'>
+          <SearchResultsGrid
+            initialData={works}
+            pageCount={pageCount}
+            search={titleContains}
+            category={categoryFilter}
+            sort={sort}
+          />
+        </section>
+      ) : (
+        /* ── Standard discover grid ── */
+        <section className='flex flex-col items-center lg:px-16 xl:px-20 py-8 px-5'>
+          <FilterNav />
+          <WorkList initialData={works} pageCount={pageCount} />
+        </section>
+      )}
     </>
   );
 }
