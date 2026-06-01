@@ -2,7 +2,7 @@
 
 import * as z from 'zod';
 import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowRight } from 'lucide-react';
 import axios, { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
@@ -10,16 +10,12 @@ import isSlug from 'validator/es/lib/isSlug';
 import type { Profile } from '@prisma/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage
 } from '@/components/ui/form';
 
@@ -33,49 +29,38 @@ const formSchema = z.object({
     .string()
     .toLowerCase()
     .min(3, { message: 'Please enter 3 or more characters.' })
-    .refine((string) => isSlug(string), {
-      message:
-        'Please enter valid username consisting only letters, numbers, underscores or hyphens.'
+    .refine((s) => isSlug(s), {
+      message: 'Only letters, numbers, underscores or hyphens allowed.'
     }),
-  bio: z.string().min(1, { message: 'Please enter bio.' }),
-  githubUrl: z
-    .string()
-    .toLowerCase()
-    .url({ message: 'Please enter a valid GitHub URL.' }),
-  linkedinUrl: z
-    .string()
-    .toLowerCase()
-    .url({ message: 'Please enter a valid LinkedIn URL.' })
+  bio: z.string().min(1, { message: 'Please enter a bio.' }),
+  githubUrl: z.string().toLowerCase().url({ message: 'Please enter a valid GitHub URL.' }),
+  linkedinUrl: z.string().toLowerCase().url({ message: 'Please enter a valid LinkedIn URL.' })
 });
 
+const inputClass =
+  'w-full px-4 py-2.5 border border-lux-border bg-white text-lux-black text-sm placeholder:text-lux-subtle focus:outline-none focus:border-lux-black/30 transition-colors duration-200';
+
 export default function ProfileForm({ profile, onClose }: ProfileFormProps) {
-  const router = useRouter();
+  const router    = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: (profile && profile.username) ?? '',
-      bio: (profile && profile.bio) ?? '',
-      githubUrl: (profile && profile.githubUrl) ?? '',
-      linkedinUrl: (profile && profile.linkedinUrl) ?? ''
+      username:    profile?.username    ?? '',
+      bio:         profile?.bio         ?? '',
+      githubUrl:   profile?.githubUrl   ?? '',
+      linkedinUrl: profile?.linkedinUrl ?? ''
     }
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setLoading(true);
     try {
-      setLoading(true);
-
-      const response = await axios.post('/api/profile', values);
-
-      if (response.data.success) {
-        toast({
-          variant: 'default',
-          title: 'Success!',
-          description: 'Profile has been successfully saved.'
-        });
-
+      const res = await axios.post('/api/profile', values);
+      if (res.data.success) {
+        toast({ description: 'Profile saved successfully.' });
         if (profile) {
           onClose();
           router.push('/');
@@ -85,109 +70,80 @@ export default function ProfileForm({ profile, onClose }: ProfileFormProps) {
         }
       }
     } catch (error) {
-      if (
-        error instanceof AxiosError &&
-        error.response?.data.error === 'Username is not available.'
-      ) {
-        form.setError('username', {
-          type: 'manual',
-          message: error.response.data.error
-        });
+      if (error instanceof AxiosError && error.response?.data.error === 'Username is not available.') {
+        form.setError('username', { type: 'manual', message: error.response.data.error });
       } else {
-        console.log(error);
-        toast({
-          variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
-          description: 'There was a problem with your request.'
-        });
+        toast({ variant: 'destructive', description: 'Something went wrong. Please try again.' });
       }
     } finally {
       setLoading(false);
     }
   };
 
+  const fields = [
+    { name: 'username'    as const, label: 'Username',     placeholder: 'your-username',           type: 'input'    },
+    { name: 'bio'         as const, label: 'Bio',          placeholder: 'Describe yourself…',      type: 'textarea' },
+    { name: 'githubUrl'   as const, label: 'GitHub URL',   placeholder: 'https://github.com/you',  type: 'input'    },
+    { name: 'linkedinUrl' as const, label: 'LinkedIn URL', placeholder: 'https://linkedin.com/in/…', type: 'input' },
+  ];
+
   return (
-    <div className='space-y-4 py-1'>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='grid gap-2'>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col gap-5'>
+        {fields.map(({ name, label, placeholder, type }) => (
           <FormField
+            key={name}
             control={form.control}
-            name='username'
+            name={name}
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
+              <FormItem className='gap-0'>
+                <label className='text-luxury-label tracking-luxury text-lux-muted block mb-2'>
+                  {label}
+                </label>
                 <FormControl>
-                  <Input placeholder='Enter your username' {...field} />
+                  {type === 'textarea' ? (
+                    <textarea
+                      rows={3}
+                      placeholder={placeholder}
+                      className={`${inputClass} resize-none`}
+                      {...field}
+                    />
+                  ) : (
+                    <input
+                      type='text'
+                      placeholder={placeholder}
+                      className={inputClass}
+                      {...field}
+                    />
+                  )}
                 </FormControl>
-                <FormMessage />
+                <FormMessage className='text-xs text-red-500 mt-1' />
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name='bio'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bio</FormLabel>
-                <FormControl>
-                  <Textarea
-                    rows={2}
-                    placeholder='Enter your bio'
-                    className='resize-none'
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='githubUrl'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>GitHub URL</FormLabel>
-                <FormControl>
-                  <Input placeholder='Enter your GitHub URL' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='linkedinUrl'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>LinkedIn URL</FormLabel>
-                <FormControl>
-                  <Input placeholder='Enter your LinkedIn URL' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className='pt-6 space-x-2 flex items-center justify-end w-full'>
-            <Button
-              onClick={onClose}
-              type='button'
-              variant='secondary'
-              className='rounded-full bg-[#f8f7f4] hover:bg-[#f5f3f0]'
-            >
-              Cancel
-            </Button>
-            <Button disabled={loading} type='submit' className='rounded-full'>
-              {loading && (
-                <>
-                  <Loader2 className='animate-spin mr-2' size={18} />
-                  Saving...
-                </>
-              )}
-              {!loading && <>Continue</>}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+        ))}
+
+        {/* Actions */}
+        <div className='flex items-center justify-end gap-2.5 pt-3 border-t border-lux-border'>
+          <button
+            type='button'
+            onClick={onClose}
+            className='px-5 py-2.5 text-luxury-label tracking-luxury text-lux-mid hover:text-lux-black border border-lux-border hover:border-lux-black/30 transition-all duration-200'
+          >
+            Cancel
+          </button>
+          <button
+            type='submit'
+            disabled={loading}
+            className='group inline-flex items-center gap-2 bg-lux-black hover:bg-lux-dark text-white px-6 py-2.5 text-luxury-label tracking-luxury font-semibold transition-colors duration-300 disabled:opacity-60'
+          >
+            {loading
+              ? <><Loader2 size={12} className='animate-spin' /> Saving…</>
+              : <><span>Save Changes</span><ArrowRight size={11} className='transition-transform duration-300 group-hover:translate-x-0.5' /></>
+            }
+          </button>
+        </div>
+      </form>
+    </Form>
   );
 }

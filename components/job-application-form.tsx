@@ -144,7 +144,7 @@ export default function JobApplicationForm({ jobId, onSuccess }: JobApplicationF
               </label>
               {profileLoading ? (
                 <p className='text-sm text-lux-muted'>Loading your projects…</p>
-              ) : profileData?.works?.length > 0 ? (
+              ) : (profileData?.works?.length ?? 0) > 0 ? (
                 <Select value={workId} onValueChange={setWorkId}>
                   <SelectTrigger className='border-lux-border rounded-none h-11 text-sm'>
                     <SelectValue placeholder='Choose a project' />
