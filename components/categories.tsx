@@ -20,7 +20,8 @@ const CATEGORIES = [
   'Jewelry & Accessories',
   'Fashion Photography',
   'NFT / Digital Ownership Fashion',
-  'Metaverse Wearables'
+  'Metaverse Wearables',
+  'Others'
 ];
 
 export default function Categories() {

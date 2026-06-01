@@ -266,6 +266,7 @@ export default function WorkForm({ work }: WorkFormProps) {
                       <SelectItem value='Jewelry & Accessories'>Jewelry & Accessories</SelectItem>
                       <SelectItem value='NFT / Digital Ownership Fashion'>NFT / Digital Ownership Fashion</SelectItem>
                       <SelectItem value='Metaverse Wearables'>Metaverse Wearables</SelectItem>
+                      <SelectItem value='Others'>Others</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

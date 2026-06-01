@@ -116,7 +116,7 @@ export default function SearchResultsGrid({
 
         {/* suggestion pills */}
         <div className='flex flex-wrap justify-center gap-2 mt-2'>
-          {['Branding', 'Illustration', 'Fashion Photography', 'Garment Design', 'Jewelry & Accessories'].map((tag) => (
+          {['Branding', 'Illustration', 'Fashion Photography', 'Garment Design', 'Jewelry & Accessories', 'Others'].map((tag) => (
             <Link
               key={tag}
               href={`/?category=${encodeURIComponent(tag)}`}

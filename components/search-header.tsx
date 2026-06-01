@@ -16,7 +16,7 @@ const SORT_TABS = [
 
 const QUICK_CATEGORIES = [
   'Branding', 'Illustration', 'Fashion Photography',
-  'Garment Design', '3D Fashion Design', 'Jewelry & Accessories',
+  'Garment Design', '3D Fashion Design', 'Jewelry & Accessories', 'Others',
 ];
 
 interface SearchHeaderProps {
