@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { Profile } from '@prisma/client';
 import { User } from '@clerk/nextjs/server';
 import { AtSign, Github, Linkedin, CalendarDays } from 'lucide-react';
+import ProBadge from '@/components/pro-badge';
 
 interface ProfileAboutProps {
   user: User;
@@ -18,8 +19,11 @@ export default function ProfileAbout({ user, profile }: ProfileAboutProps) {
 
         <div>
           <p className='text-luxury-label tracking-luxury text-lux-muted mb-3'>Full Name</p>
-          <p className='font-display text-2xl font-bold text-lux-black'>
+          <p className='font-display text-2xl font-bold text-lux-black flex items-center gap-2'>
             {user.firstName} {user.lastName}
+            {(user.publicMetadata as any)?.isPro && (
+              <ProBadge isAgency={!!(user.publicMetadata as any)?.isAgencyPro} size='md' />
+            )}
           </p>
         </div>
 

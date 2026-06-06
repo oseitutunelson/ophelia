@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
+import ProBadge from '@/components/pro-badge';
 
 interface Application {
   id: string;
@@ -125,8 +126,11 @@ export default function JobApplicationsList({ jobId }: { jobId: string }) {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className='font-display font-bold text-lux-black text-[0.95rem] leading-tight'>
+                  <p className='font-display font-bold text-lux-black text-[0.95rem] leading-tight flex items-center gap-1.5'>
                     {app.user.firstName} {app.user.lastName}
+                    {(app.user as any).publicMetadata?.isPro && (
+                      <ProBadge isAgency={!!(app.user as any).publicMetadata?.isAgencyPro} />
+                    )}
                   </p>
                   <p className='text-luxury-label tracking-luxury text-lux-subtle mt-0.5'>
                     {new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}

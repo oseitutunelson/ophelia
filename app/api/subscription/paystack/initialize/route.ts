@@ -48,7 +48,8 @@ export async function POST(req: Request) {
       email,
       amount:       amountPesewas,
       currency:     'GHS',
-      callback_url: `${appUrl}/api/subscription/paystack/verify`,
+      // Redirect to a PAGE (not API route) so the session cookie travels with the browser
+      callback_url: `${appUrl}/go-pro/success`,
       metadata:     { userId, plan, username: profile.username }
     });
 

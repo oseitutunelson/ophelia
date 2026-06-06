@@ -28,16 +28,19 @@ export default function Navbar() {
     if (!nav) return;
 
     const onScroll = () => {
+      const isMobile = window.innerWidth < 1024;
       if (window.scrollY > 40) {
-        nav.style.background = 'rgba(248, 246, 241, 0.92)';
-        nav.style.backdropFilter = 'blur(20px) saturate(180%)';
-        nav.style.borderBottom = '1px solid rgba(229, 225, 217, 0.8)';
-        nav.style.boxShadow = '0 1px 24px rgba(0,0,0,0.05)';
+        // Mobile: solid opaque bg to prevent blur bleeding into content
+        // Desktop: frosted glass effect
+        nav.style.background    = isMobile ? 'rgb(248, 246, 241)' : 'rgba(248, 246, 241, 0.92)';
+        nav.style.backdropFilter = isMobile ? 'none'              : 'blur(20px) saturate(180%)';
+        nav.style.borderBottom  = '1px solid rgba(229, 225, 217, 0.8)';
+        nav.style.boxShadow     = '0 1px 24px rgba(0,0,0,0.05)';
       } else {
-        nav.style.background = 'transparent';
+        nav.style.background    = 'transparent';
         nav.style.backdropFilter = 'none';
-        nav.style.borderBottom = '1px solid transparent';
-        nav.style.boxShadow = 'none';
+        nav.style.borderBottom  = '1px solid transparent';
+        nav.style.boxShadow     = 'none';
       }
     };
 

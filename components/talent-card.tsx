@@ -9,6 +9,8 @@ import { useToast } from '@/components/ui/use-toast';
 
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import useGetProfile from '@/hooks/use-get-profile';
+import ProBadge from '@/components/pro-badge';
 
 interface Work {
   id: string;
@@ -37,9 +39,13 @@ export default function TalentCard({
   profilePicture,
 }: TalentCardProps) {
   const { toast }                                 = useToast();
+  const { data: profileData }                     = useGetProfile({ userId });
   const [isBookmarked,   setIsBookmarked]         = useState(false);
   const [isBookmarking,  setIsBookmarking]        = useState(false);
   const [checkingStatus, setCheckingStatus]       = useState(true);
+
+  const isPro      = !!(profileData?.user as any)?.publicMetadata?.isPro;
+  const isAgency   = !!(profileData?.user as any)?.publicMetadata?.isAgencyPro;
 
   useEffect(() => {
     let alive = true;
@@ -136,11 +142,12 @@ export default function TalentCard({
             </AvatarFallback>
           </Avatar>
           <div className='min-w-0'>
-            <p className='font-display font-bold text-lux-black text-[1rem] leading-tight truncate'>
-              {username}
+            <p className='font-display font-bold text-lux-black text-[1rem] leading-tight flex items-center gap-1.5'>
+              <span className='truncate'>{username}</span>
+              {isPro && <ProBadge isAgency={isAgency} size='md' />}
             </p>
             <p className='text-luxury-label tracking-luxury text-[#c9a96e] mt-0.5'>
-              Verified Designer
+              {isPro ? (isAgency ? 'Agency Pro' : 'Verified Pro') : 'Designer'}
             </p>
           </div>
         </Link>

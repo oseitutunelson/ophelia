@@ -7,6 +7,7 @@ import { Work } from '@prisma/client';
 import WorkCard from '@/components/work-card';
 import { Button } from '@/components/ui/button';
 import useGetProfile from '@/hooks/use-get-profile';
+import ProBadge from '@/components/pro-badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -49,10 +50,13 @@ export default function WorkOwner({ userId, moreWorks }: WorkOwnerProps) {
           )}
           {!isLoading && data && data.user && data.profile && (
             <>
-              <Link href={`/${data.profile.username}`}>
-                <p className='text-xl font-medium'>
+              <Link href={`/${data.profile.username}`} className='inline-flex items-center gap-1.5'>
+                <span className='text-xl font-medium'>
                   {data.user.firstName} {data.user.lastName}
-                </p>
+                </span>
+                {(data.user as any).publicMetadata?.isPro && (
+                  <ProBadge isAgency={!!(data.user as any).publicMetadata?.isAgencyPro} size='md' />
+                )}
               </Link>
               <p className='text-sm text-muted-foreground mt-2'>
                 {data.profile.bio}
@@ -77,8 +81,11 @@ export default function WorkOwner({ userId, moreWorks }: WorkOwnerProps) {
           )}
           {!isLoading && data && data.user && data.profile && (
             <div className='flex justify-between items-center'>
-              <h4 className='font-bold max-w-[220px] truncate'>
+              <h4 className='font-bold flex items-center gap-1.5'>
                 More by {data.user.firstName} {data.user.lastName}
+                {(data.user as any).publicMetadata?.isPro && (
+                  <ProBadge isAgency={!!(data.user as any).publicMetadata?.isAgencyPro} />
+                )}
               </h4>
               <Link href={`/${data.profile.username}`}>View Profile</Link>
             </div>

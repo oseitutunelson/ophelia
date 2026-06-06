@@ -12,7 +12,14 @@ export default authMiddleware({
     '/api/users/(.*)/stats',
     '/api/job',
     '/api/work',
-    '/api/profile'
+    '/api/profile',
+    '/api/profile/(.*)',
+    // Payment webhooks — called by Paystack/Stripe servers, no session
+    '/api/subscription/paystack/webhook',
+    '/api/subscription/stripe/webhook',
+    // Go Pro page and success page — accessible before sign-in
+    '/go-pro',
+    '/go-pro/(.*)'
   ]
 });
 

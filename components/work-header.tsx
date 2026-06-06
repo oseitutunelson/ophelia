@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import useGetProfile from '@/hooks/use-get-profile';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BookmarkIcon, HeartIcon, Mail } from 'lucide-react';
+import ProBadge from '@/components/pro-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -96,11 +97,12 @@ export default function WorkHeader({ userId, title, workId }: WorkHeaderProps) {
                 <>
                   <Link
                     href={`/${data.profile.username}`}
-                    className='font-semibold text-xs md:text-sm'
+                    className='font-semibold text-xs md:text-sm flex items-center gap-1'
                   >
-                    <p>
-                      {data.user.firstName} {data.user.lastName}
-                    </p>
+                    {data.user.firstName} {data.user.lastName}
+                    {(data.user as any).publicMetadata?.isPro && (
+                      <ProBadge isAgency={!!(data.user as any).publicMetadata?.isAgencyPro} />
+                    )}
                   </Link>
                   <div className='flex gap-[10px] items-center'>
                     <div className='flex items-center'>

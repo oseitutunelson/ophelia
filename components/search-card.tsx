@@ -10,6 +10,7 @@ import { BookmarkIcon, HeartIcon, EyeIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Icons } from '@/components/icons/Icons';
 import useGetProfile from '@/hooks/use-get-profile';
+import ProBadge from '@/components/pro-badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 // Deterministic aspect-ratio pattern — creates visual masonry variety
@@ -157,8 +158,11 @@ export default function SearchCard({ work, index }: SearchCardProps) {
                 {data.user.firstName?.charAt(0)}{data.user.lastName?.charAt(0)}
               </AvatarFallback>
             </Avatar>
-            <span className='text-xs text-lux-mid truncate max-w-[130px]'>
-              {data.user.firstName} {data.user.lastName}
+            <span className='text-xs text-lux-mid flex items-center gap-1'>
+              <span className='truncate max-w-[110px]'>{data.user.firstName} {data.user.lastName}</span>
+              {(data.user as any).publicMetadata?.isPro && (
+                <ProBadge isAgency={!!(data.user as any).publicMetadata?.isAgencyPro} />
+              )}
             </span>
           </Link>
         ) : (

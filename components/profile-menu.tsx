@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import useCurrentProfile from '@/hooks/use-current-profile';
 import EditProfileModal from '@/components/modals/edit-profile-modal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import ProBadge from '@/components/pro-badge';
 import {
   HoverCard,
   HoverCardContent,
@@ -68,8 +69,11 @@ export default function ProfileMenu() {
                       {data.user.lastName?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <p className='mt-4 font-medium text-[15px]'>
+                  <p className='mt-4 font-medium text-[15px] flex items-center gap-1.5'>
                     {data.user.firstName} {data.user.lastName}
+                    {(data.user as any).publicMetadata?.isPro && (
+                      <ProBadge isAgency={!!(data.user as any).publicMetadata?.isAgencyPro} size='md' />
+                    )}
                   </p>
                 </Link>
               )}
@@ -164,8 +168,11 @@ export default function ProfileMenu() {
                       {data.user.lastName?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <p className='mt-4 font-medium text-[15px]'>
+                  <p className='mt-4 font-medium text-[15px] flex items-center gap-1.5'>
                     {data.user.firstName} {data.user.lastName}
+                    {(data.user as any).publicMetadata?.isPro && (
+                      <ProBadge isAgency={!!(data.user as any).publicMetadata?.isAgencyPro} size='md' />
+                    )}
                   </p>
                 </Link>
               )}

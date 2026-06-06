@@ -10,6 +10,7 @@ import { useAuth } from '@clerk/nextjs';
 
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import ProBadge from '@/components/pro-badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import useGetProfile from '@/hooks/use-get-profile';
 
@@ -129,8 +130,11 @@ export default function JobCard({ job, onDelete }: JobCardProps) {
                     {data.user.firstName?.charAt(0)}{data.user.lastName?.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
-                <span className='text-xs text-lux-mid truncate max-w-[140px]'>
-                  {data.user.firstName} {data.user.lastName}
+                <span className='text-xs text-lux-mid flex items-center gap-1'>
+                  <span className='truncate max-w-[120px]'>{data.user.firstName} {data.user.lastName}</span>
+                  {(data.user as any).publicMetadata?.isPro && (
+                    <ProBadge isAgency={!!(data.user as any).publicMetadata?.isAgencyPro} />
+                  )}
                 </span>
               </Link>
             ) : null}

@@ -56,10 +56,11 @@ export async function GET(
         return {
           ...app,
           user: {
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            imageUrl: user.imageUrl
+            id:             user.id,
+            firstName:      user.firstName,
+            lastName:       user.lastName,
+            imageUrl:       user.imageUrl,
+            publicMetadata: user.publicMetadata
           },
           work
         };
