@@ -12,6 +12,7 @@ interface MobileMenuProps {
 const NavLinks = [
   { href: '/find-talent', key: 'Find talent', text: 'Find talent' },
   { href: '/', key: 'Inspiration', text: 'Inspiration' },
+  { href: '/blog', key: 'Journal', text: 'Journal' },
   { href: '/learn', key: 'Learn design', text: 'Learn design' },
   { href: '/jobs', key: 'Jobs', text: 'Jobs' },
   { href: '/', key: 'Go Pro', text: 'Go Pro' }

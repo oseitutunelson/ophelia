@@ -151,3 +151,71 @@ model Message {
   @@index([conversationId])
   @@index([senderId])
 }
+
+model BlogPost {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug            String   @unique
+  title           String
+  excerpt         String?
+  content         String
+  coverImage      String?
+  category        String
+  tags            String[]
+  authorId        String
+  status          String   @default("published")
+  readTime        Int      @default(5)
+  metaDescription String?
+  viewCount       Int      @default(0)
+  featured        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  comments  BlogComment[]
+  likes     BlogLike[]
+  bookmarks BlogBookmark[]
+
+  @@index([authorId])
+  @@index([category])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model BlogComment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([authorId])
+}
+
+model BlogLike {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([userId])
+  @@unique([postId, userId])
+}
+
+model BlogBookmark {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([userId])
+  @@unique([postId, userId])
+}

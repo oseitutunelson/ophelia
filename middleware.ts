@@ -19,7 +19,12 @@ export default authMiddleware({
     '/api/subscription/stripe/webhook',
     // Go Pro page and success page — accessible before sign-in
     '/go-pro',
-    '/go-pro/(.*)'
+    '/go-pro/(.*)',
+    // Blog — readable by anyone, write actions require auth
+    '/blog',
+    '/blog/(.*)',
+    '/api/blog',
+    '/api/blog/(.*)'
   ]
 });
 
