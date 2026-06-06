@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { paystack } from '@/lib/paystack';
 
+export const dynamic = 'force-dynamic';
+
 async function getGhsRate(): Promise<number> {
   try {
     const res = await fetch('https://open.er-api.com/v6/latest/USD', { next: { revalidate: 3600 } });

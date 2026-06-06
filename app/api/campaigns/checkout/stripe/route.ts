@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { stripe } from '@/lib/stripe';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     const { userId } = auth();
