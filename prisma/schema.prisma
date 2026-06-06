@@ -219,3 +219,30 @@ model BlogBookmark {
   @@index([userId])
   @@unique([postId, userId])
 }
+
+model AdCampaign {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String
+  type           String    // "design" | "agency" | "job" | "blog"
+  contentId      String    // ID of promoted content; empty string for agency type
+  contentTitle   String
+  contentImage   String?
+  status         String    @default("pending_payment")
+  // "pending_payment" | "active" | "paused" | "expired"
+  duration       Int       // 7 | 14 | 30 days
+  price          Float
+  startDate      DateTime?
+  endDate        DateTime?
+  impressions    Int       @default(0)
+  clicks         Int       @default(0)
+  stripeSessionId String?
+  paystackRef    String?
+  paymentStatus  String    @default("pending") // "pending" | "paid" | "failed"
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([type, status])
+  @@index([endDate])
+}

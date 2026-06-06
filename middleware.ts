@@ -24,7 +24,11 @@ export default authMiddleware({
     '/blog',
     '/blog/(.*)',
     '/api/blog',
-    '/api/blog/(.*)'
+    '/api/blog/(.*)',
+    // Advertise landing page — publicly viewable
+    '/advertise',
+    // Ads feed — publicly readable
+    '/api/ads'
   ]
 });
 

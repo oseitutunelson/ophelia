@@ -26,7 +26,7 @@ export default function AccountPage() {
 
       {/* ── Tab nav ─────────────────────────────────────────── */}
       <div className='border-b border-lux-border'>
-        <div className='max-w-[1152px] mx-auto px-6 flex'>
+        <div className='max-w-[1152px] mx-auto px-6 flex overflow-x-auto scrollbar-hide'>
           <Link
             href='/account'
             className='inline-flex items-center h-12 px-5 text-luxury-label tracking-luxury text-lux-black border-b-2 border-lux-black -mb-px'
@@ -38,6 +38,12 @@ export default function AccountPage() {
             className='inline-flex items-center h-12 px-5 text-luxury-label tracking-luxury text-lux-muted hover:text-lux-mid border-b-2 border-transparent transition-colors duration-200'
           >
             Saved Works
+          </Link>
+          <Link
+            href='/account/campaigns'
+            className='inline-flex items-center h-12 px-5 text-luxury-label tracking-luxury text-lux-muted hover:text-lux-mid border-b-2 border-transparent transition-colors duration-200'
+          >
+            My Campaigns
           </Link>
         </div>
         <div className='divider-gold mx-6' />

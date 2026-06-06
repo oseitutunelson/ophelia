@@ -13,19 +13,22 @@ import useGetProfile from '@/hooks/use-get-profile';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import ProBadge from '@/components/pro-badge';
+import SponsoredBadge from '@/components/sponsored-badge';
 
 interface WorkCardProps {
   work: Work;
   isProfile?: boolean;
   isMoreWorks?: boolean;
   isAlsoLikeWorks?: boolean;
+  isSponsored?: boolean;
 }
 
 export default function WorkCard({
   work,
   isProfile,
   isMoreWorks = false,
-  isAlsoLikeWorks = false
+  isAlsoLikeWorks = false,
+  isSponsored = false,
 }: WorkCardProps) {
   const { data, isLoading } = useGetProfile({ userId: work.userId });
 
@@ -71,6 +74,13 @@ export default function WorkCard({
           sizes='(max-width: 767px) 100vw, (max-width: 1023px) 50vw, (max-width: 1439px) 33vw, 25vw'
           className='object-cover img-zoom'
         />
+
+        {/* sponsored badge */}
+        {isSponsored && (
+          <div className='absolute top-2 left-2 z-10'>
+            <SponsoredBadge variant='overlay' />
+          </div>
+        )}
 
         {/* hover overlay */}
         <div className='opacity-0 group-hover:opacity-100 absolute inset-0 bg-card-info transition-opacity duration-500 ease-out z-10 p-4 flex items-end'>
