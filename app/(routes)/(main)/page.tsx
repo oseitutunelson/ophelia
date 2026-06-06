@@ -6,6 +6,7 @@ import FilterNav from '@/components/filter-nav';
 import SearchHeader from '@/components/search-header';
 import SearchResultsGrid from '@/components/search-results-grid';
 import FashionHero from '@/components/fashion-hero';
+import SponsoredWorksSection from '@/components/sponsored-works-section';
 
 type Props = {
   searchParams: { search?: string; category?: string; sort?: string };
@@ -95,10 +96,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         </section>
       ) : (
         /* ── Standard discover grid ── */
-        <section className='flex flex-col items-center lg:px-16 xl:px-20 py-8 px-5'>
-          <FilterNav />
-          <WorkList initialData={works} pageCount={pageCount} />
-        </section>
+        <>
+          <SponsoredWorksSection />
+          <section className='flex flex-col items-center lg:px-16 xl:px-20 py-8 px-5'>
+            <FilterNav />
+            <WorkList initialData={works} pageCount={pageCount} />
+          </section>
+        </>
       )}
     </>
   );
