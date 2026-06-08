@@ -37,7 +37,10 @@ export default authMiddleware({
     '/api/courses/(.*)',
     '/api/courses/external',
     // External instructor profile — publicly readable
-    '/api/instructor'
+    '/api/instructor',
+    // About page and public stats
+    '/about',
+    '/api/public/(.*)'
   ]
 });
 

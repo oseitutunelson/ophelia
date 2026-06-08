@@ -23,7 +23,7 @@ const FOOTER_COLS = [
   {
     heading: 'Company',
     links: [
-      { href: '/', text: 'About' },
+      { href: '/about', text: 'About' },
       { href: '/', text: 'Careers' },
       { href: '/', text: 'Press' },
       { href: '/', text: 'Contact' }
