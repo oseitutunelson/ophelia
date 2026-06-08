@@ -453,3 +453,25 @@ model LearningStreak {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 }
+
+// ── Admin System ──────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  adminId   String
+  action    String   // e.g. "APPROVE_INSTRUCTOR", "BAN_USER", "FEATURE_COURSE"
+  target    String?  // ID of the affected resource
+  details   String?  // Extra context
+  createdAt DateTime @default(now())
+
+  @@index([adminId])
+  @@index([createdAt])
+}
+
+model UserBan {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String   @unique
+  reason   String?
+  bannedBy String
+  bannedAt DateTime @default(now())
+}

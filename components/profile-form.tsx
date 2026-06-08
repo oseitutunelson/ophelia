@@ -33,8 +33,8 @@ const formSchema = z.object({
       message: 'Only letters, numbers, underscores or hyphens allowed.'
     }),
   bio: z.string().min(1, { message: 'Please enter a bio.' }),
-  githubUrl: z.string().toLowerCase().url({ message: 'Please enter a valid GitHub URL.' }),
-  linkedinUrl: z.string().toLowerCase().url({ message: 'Please enter a valid LinkedIn URL.' })
+  githubUrl: z.string().toLowerCase().url({ message: 'Please enter a valid GitHub URL.' }).optional().or(z.literal('')),
+  linkedinUrl: z.string().toLowerCase().url({ message: 'Please enter a valid LinkedIn URL.' }).optional().or(z.literal(''))
 });
 
 const inputClass =
@@ -81,24 +81,25 @@ export default function ProfileForm({ profile, onClose }: ProfileFormProps) {
   };
 
   const fields = [
-    { name: 'username'    as const, label: 'Username',     placeholder: 'your-username',           type: 'input'    },
-    { name: 'bio'         as const, label: 'Bio',          placeholder: 'Describe yourself…',      type: 'textarea' },
-    { name: 'githubUrl'   as const, label: 'GitHub URL',   placeholder: 'https://github.com/you',  type: 'input'    },
-    { name: 'linkedinUrl' as const, label: 'LinkedIn URL', placeholder: 'https://linkedin.com/in/…', type: 'input' },
+    { name: 'username'    as const, label: 'Username',     placeholder: 'your-username',             type: 'input',    optional: false },
+    { name: 'bio'         as const, label: 'Bio',          placeholder: 'Describe yourself…',        type: 'textarea', optional: false },
+    { name: 'githubUrl'   as const, label: 'GitHub URL',   placeholder: 'https://github.com/you',    type: 'input',    optional: true },
+    { name: 'linkedinUrl' as const, label: 'LinkedIn URL', placeholder: 'https://linkedin.com/in/…', type: 'input',    optional: true },
   ];
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col gap-5'>
-        {fields.map(({ name, label, placeholder, type }) => (
+        {fields.map(({ name, label, placeholder, type, optional }) => (
           <FormField
             key={name}
             control={form.control}
             name={name}
             render={({ field }) => (
               <FormItem className='gap-0'>
-                <label className='text-luxury-label tracking-luxury text-lux-muted block mb-2'>
+                <label className='text-luxury-label tracking-luxury text-lux-muted block mb-2 flex items-center gap-2'>
                   {label}
+                  {optional && <span className='text-[10px] text-lux-subtle font-normal tracking-wide'>Optional</span>}
                 </label>
                 <FormControl>
                   {type === 'textarea' ? (
