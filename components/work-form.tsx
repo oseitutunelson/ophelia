@@ -41,7 +41,16 @@ const formSchema = z.object({
   description: z.string().min(1, { message: 'Please enter description.' }),
   liveSiteUrl: z.string().min(1, { message: 'Please enter website URL.' }),
   githubUrl: z.string().min(1, { message: 'Please enter GitHub URL.' }),
-  category: z.string().min(1, { message: 'Please select category.' })
+  category: z.string().min(1, { message: 'Please select category.' }),
+  othersCategory: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.category === 'Others' && !data.othersCategory?.trim()) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Please describe your category.',
+      path: ['othersCategory'],
+    });
+  }
 });
 
 export default function WorkForm({ work }: WorkFormProps) {
@@ -64,9 +73,12 @@ export default function WorkForm({ work }: WorkFormProps) {
       description: work?.description ?? '',
       liveSiteUrl: work?.liveSiteUrl ?? '',
       githubUrl: work?.githubUrl ?? '',
-      category: work?.category ?? ''
+      category: work?.category ?? '',
+      othersCategory: '',
     }
   });
+
+  const selectedCategory = form.watch('category');
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -90,7 +102,12 @@ export default function WorkForm({ work }: WorkFormProps) {
         return;
       }
 
-      const newValues = { ...values, image: imageURL };
+      const finalCategory =
+        values.category === 'Others' && values.othersCategory?.trim()
+          ? values.othersCategory.trim()
+          : values.category;
+
+      const newValues = { ...values, image: imageURL, category: finalCategory };
 
       if (work) {
         const response = await axios.post(`/api/work/${work.id}`, newValues);
@@ -273,6 +290,22 @@ export default function WorkForm({ work }: WorkFormProps) {
                 </FormItem>
               )}
             />
+
+            {selectedCategory === 'Others' && (
+              <FormField
+                control={form.control}
+                name='othersCategory'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Specify category</FormLabel>
+                    <FormControl>
+                      <Input placeholder='e.g. Tattoo Art, Textile Design…' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
         </div>
       </form>
