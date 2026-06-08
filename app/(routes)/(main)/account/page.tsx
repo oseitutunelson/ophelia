@@ -45,6 +45,12 @@ export default function AccountPage() {
           >
             My Campaigns
           </Link>
+          <Link
+            href='/account/learning'
+            className='inline-flex items-center h-12 px-5 text-luxury-label tracking-luxury text-lux-muted hover:text-lux-mid border-b-2 border-transparent transition-colors duration-200'
+          >
+            My Learning
+          </Link>
         </div>
         <div className='divider-gold mx-6' />
       </div>

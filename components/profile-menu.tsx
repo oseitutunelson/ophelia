@@ -95,6 +95,12 @@ export default function ProfileMenu() {
               >
                 My Campaigns
               </Link>
+              <Link
+                href='/account/learning'
+                className='text-[15px] py-2 hover:opacity-80 transition-opacity ease-in-out duration-200'
+              >
+                My Learning
+              </Link>
               <button
                 onClick={() => setModalOpen(true)}
                 type='button'
@@ -199,6 +205,12 @@ export default function ProfileMenu() {
                 className='text-[15px] py-2 hover:opacity-80 transition-all ease-in-out duration-200'
               >
                 My Campaigns
+              </Link>
+              <Link
+                href='/account/learning'
+                className='text-[15px] py-2 hover:opacity-80 transition-all ease-in-out duration-200'
+              >
+                My Learning
               </Link>
               <button
                 onClick={() => setModalOpen(true)}

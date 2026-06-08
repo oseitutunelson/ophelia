@@ -28,7 +28,16 @@ export default authMiddleware({
     // Advertise landing page — publicly viewable
     '/advertise',
     // Ads feed — publicly readable
-    '/api/ads'
+    '/api/ads',
+    // Learning platform — browsable without auth; enrolled routes require auth
+    '/learn',
+    '/learn/(.*)',
+    '/teach',
+    '/api/courses',
+    '/api/courses/(.*)',
+    '/api/courses/external',
+    // External instructor profile — publicly readable
+    '/api/instructor'
   ]
 });
 

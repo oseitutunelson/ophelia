@@ -15,7 +15,7 @@ const FOOTER_COLS = [
     heading: 'Resources',
     links: [
       { href: '/blog', text: 'Blog' },
-      { href: '/', text: 'Learn Design' },
+      { href: '/learn', text: 'Learn Design' },
       { href: '/advertise', text: 'Advertising' },
       { href: '/', text: 'Support' }
     ]

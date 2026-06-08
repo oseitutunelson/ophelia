@@ -246,3 +246,210 @@ model AdCampaign {
   @@index([type, status])
   @@index([endDate])
 }
+
+// ── Learning Platform ─────────────────────────────────────────────────────────
+
+model InstructorApplication {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @unique
+  fullName        String
+  bio             String
+  expertise       String[]
+  experience      String
+  portfolioUrl    String?
+  sampleLessonUrl String?
+  status          String   @default("pending") // "pending" | "approved" | "rejected"
+  reviewNote      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+}
+
+model Instructor {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @unique
+  bio           String?
+  expertise     String[]
+  website       String?
+  twitter       String?
+  instagram     String?
+  youtube       String?
+  isVerified    Boolean  @default(false)
+  totalStudents Int      @default(0)
+  totalCourses  Int      @default(0)
+  rating        Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  courses Course[]
+}
+
+model Course {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug             String   @unique
+  title            String
+  description      String
+  shortDescription String?
+  thumbnail        String?
+  previewVideo     String?
+  instructorId     String
+  category         String
+  level            String   @default("Beginner")
+  language         String   @default("English")
+  price            Float    @default(0)
+  isFree           Boolean  @default(true)
+  isPublished      Boolean  @default(false)
+  isFeatured       Boolean  @default(false)
+  totalDuration    Int      @default(0)
+  totalLessons     Int      @default(0)
+  requirements     String[]
+  objectives       String[]
+  tags             String[]
+  hasCertificate   Boolean  @default(true)
+  metaDescription  String?
+  enrollmentCount  Int      @default(0)
+  rating           Float    @default(0)
+  ratingCount      Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  instructor  Instructor     @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  modules     CourseModule[]
+  enrollments Enrollment[]
+  reviews     CourseReview[]
+  bookmarks   CourseBookmark[]
+
+  @@index([instructorId])
+  @@index([category])
+  @@index([isPublished])
+  @@index([isFeatured])
+  @@index([createdAt])
+}
+
+model CourseModule {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  courseId    String
+  title       String
+  description String?
+  order       Int
+  createdAt   DateTime @default(now())
+
+  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons Lesson[]
+
+  @@index([courseId])
+}
+
+model Lesson {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  moduleId    String
+  title       String
+  description String?
+  type        String   @default("video") // "video" | "text" | "resource"
+  content     String?
+  duration    Int      @default(0)
+  order       Int
+  isFree      Boolean  @default(false)
+  resources   String[]
+  createdAt   DateTime @default(now())
+
+  module   CourseModule     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress LessonProgress[]
+
+  @@index([moduleId])
+}
+
+model Enrollment {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String
+  courseId        String
+  status          String    @default("active")
+  paymentStatus   String    @default("free")
+  stripeSessionId String?
+  paidAt          DateTime?
+  completedAt     DateTime?
+  progressPct     Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  course   Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress LessonProgress[]
+
+  @@index([userId])
+  @@index([courseId])
+  @@unique([userId, courseId])
+}
+
+model LessonProgress {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String
+  lessonId       String
+  enrollmentId   String
+  completed      Boolean   @default(false)
+  completedAt    DateTime?
+  watchedSeconds Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  lesson     Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([lessonId])
+  @@index([enrollmentId])
+  @@unique([userId, lessonId])
+}
+
+model CourseReview {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  courseId  String
+  userId    String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+  @@index([userId])
+  @@unique([courseId, userId])
+}
+
+model Certificate {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String
+  courseId       String
+  courseTitle    String
+  instructorName String
+  completedAt    DateTime @default(now())
+  certificateId  String   @unique
+
+  @@index([userId])
+  @@index([courseId])
+}
+
+model CourseBookmark {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  courseId  String
+  createdAt DateTime @default(now())
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([courseId])
+  @@unique([userId, courseId])
+}
+
+model LearningStreak {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String    @unique
+  currentStreak    Int       @default(0)
+  longestStreak    Int       @default(0)
+  lastActivityDate DateTime?
+  totalDaysLearned Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
